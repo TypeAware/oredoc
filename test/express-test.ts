@@ -1,7 +1,7 @@
 import * as express from 'express';
 import {RequestHandler} from 'express';
 import {DocGen, Entity} from '../dist';
-import {Route, RouteBase} from '../src';
+import {Route, RouteBase, RouteMulti} from '../src';
 
 const router = express.Router();
 const doc = new DocGen();
@@ -12,37 +12,61 @@ export const register = (v: any) => {
   router.put('/', makePutFoo(v, entity));
 };
 
+function log(target: any, key: any, descriptor: any) {
+  console.log(`${key} was called!`);
+}
+
+class P {
+  @log
+  foo() {
+    console.log('Do something');
+  }
+}
+
 const makeGetFoo = (v: any, e: Entity): RequestHandler => {
   
-  const r = new Route({
-    request: {
-      headers:{
-      
-      }
-    },
-    response:{
-      body: {
-        success: {
-          foo: 'yes'
-        }
+  // const r = new Route({
+  //   request: {
+  //     headers:{
+  //
+  //     },
+  //     body: {
+  //
+  //     }
+  //   },
+  //   response:{
+  //
+  //     body: {
+  //       success: {
+  //         foo: 'yes'
+  //       }
+  //     }
+  //   }
+  // });
+  
+  const r = new RouteMulti({
+    headers: {},
+    body: {}
+  }, {
+    body: {
+      success: {
+        foo: 'yes'
       }
     }
   });
   
+  type SuccessResponse = typeof r.res.body.success;
   
-  type SuccessResponse = typeof r.info.response.body.success;
-  
-  e.addRoute<typeof r.info>({
+  e.addRoute({
     path: '',
-    example: r.info
+    example: r
   });
   
   return (req, res, next) => {
-  
-  
+    
     const headers = req.headers.foo;
-  
-    res.json(<SuccessResponse> {foo:''});
+    
+    res.json(<SuccessResponse> {foo: ''});
     
   };
   

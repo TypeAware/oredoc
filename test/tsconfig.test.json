@@ -3,6 +3,7 @@
   "allowJs": false,
   "compilerOptions": {
     "declaration": false,
+    "experimentalDecorators":true,
     "allowJs": false,
     "pretty": true,
     "skipLibCheck": true,

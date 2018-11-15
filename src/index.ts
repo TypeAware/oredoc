@@ -36,8 +36,13 @@ export interface Response {
 }
 
 export interface RouteBase {
-  request: Request,
-  response: Response,
+  req: Request,
+  res: Response,
+}
+
+export interface RouteBaseMulti {
+  req: Request,
+  res: Response,
 }
 
 export interface RouteInfo {
@@ -45,8 +50,8 @@ export interface RouteInfo {
   // request: Request,
   // response: Response,
   example?: {
-    response: Response,
-    request: Request
+    res: Response,
+    req: Request
   }
 }
 
@@ -64,7 +69,7 @@ export class Entity {
     this.routes = routes || {};
   }
   
-  addRoute<R = RouteBase>(v: RouteInfo): this {
+  addRoute(v: RouteInfo): this {
     
     if (this.routes[v.path]) {
       throw new Error(
@@ -98,6 +103,11 @@ export const joinMessages = (...args: string[]) => {
 };
 
 
+const dog =  (v: any) => {
+  return (target: any, field: any, desc: string) => {
+  
+  }
+};
 
 export class Route<T extends RouteBase>  {
   
@@ -105,7 +115,7 @@ export class Route<T extends RouteBase>  {
   
   constructor(v: T) {
     this.info = Object.assign(<RouteBase>{
-      request:{
+      req:{
         headers:{},
         queryParams:{},
         parsedQueryParams:{},
@@ -114,7 +124,7 @@ export class Route<T extends RouteBase>  {
           error:{}
         }
       },
-      response:{
+      res:{
         headers:{},
         body:{
           success:{},
@@ -125,6 +135,35 @@ export class Route<T extends RouteBase>  {
   }
   
 }
+
+export class RouteMulti<Req extends Request, Res extends Response>  {
+  
+  req: Req;
+  res: Res;
+  
+  constructor(req: Req, res: Res) {
+  
+    this.req = Object.assign({
+      headers: {},
+      queryParams: {},
+      parsedQueryParams: {},
+      body: {
+        success: {},
+        error: {}
+      }
+    }, req);
+  
+    this.res = Object.assign({
+      headers: {},
+      body: {
+        success: {},
+        error: {}
+      }
+    }, res);
+    
+  }
+}
+
 
 export class DocGen {
   

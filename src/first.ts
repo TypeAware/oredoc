@@ -10,26 +10,31 @@ import * as strm from "stream";
 
 
 const fdec = function(target:any, field: any, desc: any){
-  console.log('target:', target);
+  console.log('target 0 :', target);
   target.bar = 3;
+  return target;
 };
 
 const fdec2 = function(){
-  console.log('target 1:');
   return function(target:any, field: any, desc: any){
-    console.log('target:', target);
+    console.log({target, field, desc});
     target.bar = 3;
+    return target;
   }
 };
 
-fdec
-fdec2()
-class Foo {
-  
-  static bar: number
+////
 
+// @fdec
+class Foo {
+  @fdec2()
+  static bar: number
 }
 
 
-console.log(Foo.bar);
-console.log(new Foo());
+console.log(Foo.bar)
+const v = new Foo();
+v.constructor = 3;
+console.log(v.constructor.bar);
+console.log(v.constructor.bar);
+console.log(v.constructor.bar);

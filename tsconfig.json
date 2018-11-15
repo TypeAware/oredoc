@@ -3,6 +3,7 @@
     "outDir": "dist",
     "allowJs": false,
     "pretty": true,
+    "experimentalDecorators": true,
     "resolveJsonModule": true,
     "sourceMap": false,
     "skipLibCheck": true,
@@ -14,7 +15,6 @@
     "removeComments": true,
     "allowUnreachableCode": true,
     "lib": [
-      "es2015",
       "es2016",
       "es2017"
     ]

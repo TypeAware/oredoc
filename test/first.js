@@ -1,4 +1,23 @@
 #!/usr/bin/env node
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-console.log('your simple typescript test goes here.');
+exports.__esModule = true;
+var fdec = function (target, field, desc) {
+    console.log('target:', target);
+    target.bar = 3;
+};
+var fdec2 = function () {
+    console.log('target 1:');
+    return function (target, field, desc) {
+        console.log('target:', target);
+        target.bar = 3;
+    };
+};
+fdec;
+fdec2();
+var Foo = /** @class */ (function () {
+    function Foo() {
+    }
+    return Foo;
+}());
+console.log(Foo.bar);
+console.log(new Foo());
