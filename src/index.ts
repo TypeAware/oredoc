@@ -64,7 +64,7 @@ export class Entity {
     this.routes = routes || {};
   }
   
-  addRoute<Route = RouteBase>(v: RouteInfo): this {
+  addRoute<R = RouteBase>(v: RouteInfo): this {
     
     if (this.routes[v.path]) {
       throw new Error(
@@ -98,12 +98,30 @@ export const joinMessages = (...args: string[]) => {
 };
 
 
+
 export class Route<T extends RouteBase>  {
   
   info: T;
   
   constructor(v: T) {
-    this.info = v;
+    this.info = Object.assign(<RouteBase>{
+      request:{
+        headers:{},
+        queryParams:{},
+        parsedQueryParams:{},
+        body:{
+          success:{},
+          error:{}
+        }
+      },
+      response:{
+        headers:{},
+        body:{
+          success:{},
+          error:{}
+        }
+      }
+    }, v);
   }
   
 }
