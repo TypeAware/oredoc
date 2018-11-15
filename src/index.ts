@@ -16,8 +16,8 @@ export interface Headers {
 }
 
 export interface Request<Body = any> {
-  headers: Headers;
-  body:  {
+  headers?: Headers;
+  body?:  {
     success: any,
     error: any
   };
@@ -30,18 +30,23 @@ export interface Request<Body = any> {
 }
 
 export interface Response {
-  headers: Headers;
-  body:{
+  headers?: Headers;
+  body?:{
     success: any,
     error: any
   };
 }
 
-export interface RouteInfo {
-  path: string,
+export interface RouteBase {
   request: Request,
   response: Response,
-  example: {
+}
+
+export interface RouteInfo {
+  path: string,
+  // request: Request,
+  // response: Response,
+  example?: {
     response: {
       success: any,
       error: any
@@ -63,7 +68,7 @@ export class Entity {
     this.routes = routes || {};
   }
   
-  addRoute<Res = any, Req = any>(v: RouteInfo): this {
+  addRoute<Route = RouteBase>(v: RouteInfo): this {
     
     if (this.routes[v.path]) {
       throw new Error(
@@ -118,7 +123,7 @@ export class DocGen {
   createAndAddEntity(name: string, routes?: RouteMap): Entity {
   
     if (this.info.entities[name]) {
-      throw new Error(joinMessages('OreDoc already has an entity with name:', v.name));
+      throw new Error(joinMessages('OreDoc already has an entity with name:', name));
     }
     
     const entity = this.createEntity(name,routes);
