@@ -1,7 +1,6 @@
 import * as express from 'express';
 import {RequestHandler} from 'express';
-import {DocGen, Entity} from '../dist';
-import {Route, RouteBase, RouteMulti} from '../src';
+import {DocGen, Entity, Route, RouteBase, RouteMulti} from '../dist';
 
 const router = express.Router();
 const doc = new DocGen();
@@ -25,25 +24,6 @@ class P {
 
 const makeGetFoo = (v: any, e: Entity): RequestHandler => {
   
-  // const r = new Route({
-  //   request: {
-  //     headers:{
-  //
-  //     },
-  //     body: {
-  //
-  //     }
-  //   },
-  //   response:{
-  //
-  //     body: {
-  //       success: {
-  //         foo: 'yes'
-  //       }
-  //     }
-  //   }
-  // });
-  
   const r = new RouteMulti({
     headers: {},
     body: {}
@@ -54,6 +34,8 @@ const makeGetFoo = (v: any, e: Entity): RequestHandler => {
       }
     }
   });
+  
+  //
   
   type SuccessResponse = typeof r.res.body.success;
   

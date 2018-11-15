@@ -47,9 +47,7 @@ export interface RouteBaseMulti {
 
 export interface RouteInfo {
   path: string,
-  // request: Request,
-  // response: Response,
-  example?: {
+  example: {
     res: Response,
     req: Request
   }
@@ -114,7 +112,7 @@ export class Route<T extends RouteBase>  {
   info: T;
   
   constructor(v: T) {
-    this.info = Object.assign(<RouteBase>{
+    this.info = Object.assign(<RouteBase>{  // cast to ?
       req:{
         headers:{},
         queryParams:{},
