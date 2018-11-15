@@ -5,7 +5,6 @@ import {RequestHandler} from 'express';
 import log from './logger';
 import * as safe from '@oresoftware/safe-stringify';
 import chalk from 'chalk';
-import {RouteBase} from '../dist';
 
 export const r2gSmokeTest = function () {
   // r2g command line app uses this exported function

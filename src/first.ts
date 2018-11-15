@@ -25,16 +25,16 @@ const fdec2 = function(){
 
 ////
 
-// @fdec
-class Foo {
-  @fdec2()
-  static bar: number
-}
-
-
-console.log(Foo.bar)
-const v = new Foo();
-v.constructor = 3;
-console.log(v.constructor.bar);
-console.log(v.constructor.bar);
-console.log(v.constructor.bar);
+// // @fdec
+// class Foo {
+//   @fdec2()
+//   static bar: number
+// }
+//
+//
+// console.log(Foo.bar)
+// const v = new Foo();
+// v.constructor = 3;
+// console.log(v.constructor.bar);
+// console.log(v.constructor.bar);
+// console.log(v.constructor.bar);

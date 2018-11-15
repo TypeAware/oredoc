@@ -1,6 +1,6 @@
 import * as express from 'express';
 import {RequestHandler} from 'express';
-import {DocGen, Entity, Route, RouteBase, RouteMulti} from '../dist';
+import {DocGen, Entity, Route, RouteBase, RouteMulti} from '../dist/main';
 
 const router = express.Router();
 const doc = new DocGen();
