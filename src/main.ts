@@ -28,10 +28,7 @@ export interface Request {
 
 export interface Response {
   headers?: Headers;
-  body?:{
-    success?: any,
-    error?: any
-  };
+  body?: any;
 }
 
 export interface RouteBase {
@@ -100,39 +97,6 @@ export const joinMessages = (...args: string[]) => {
 };
 
 
-const dog =  (v: any) => {
-  return (target: any, field: any, desc: string) => {
-  
-  }
-};
-
-export class Route<T extends RouteBase>  {
-  
-  info: T;
-  
-  constructor(v: T) {
-    this.info = Object.assign(<RouteBase>{  // cast to ?
-      req:{
-        headers:{},
-        queryParams:{},
-        parsedQueryParams:{},
-        body:{
-          success:{},
-          error:{}
-        }
-      },
-      res:{
-        headers:{},
-        body:{
-          success:{},
-          error:{}
-        }
-      }
-    }, v);
-  }
-  
-}
-
 export class RouteMulti<Req extends Request, Res extends Response>  {
   
   req: Req;
@@ -144,18 +108,12 @@ export class RouteMulti<Req extends Request, Res extends Response>  {
       headers: {},
       queryParams: {},
       parsedQueryParams: {},
-      body: {
-        success: {},
-        error: {}
-      }
+      body: {}
     }, req);
   
     this.res = Object.assign({
       headers: {},
-      body: {
-        success: {},
-        error: {}
-      }
+      body: {}
     }, res);
     
   }
