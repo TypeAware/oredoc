@@ -1,7 +1,7 @@
 import * as express from 'express';
 import {RequestHandler} from 'express';
 import {DocGen, Entity} from '../dist';
-import {RouteBase} from '../src';
+import {Route, RouteBase} from '../src';
 
 const router = express.Router();
 const doc = new DocGen();
@@ -14,24 +14,35 @@ export const register = (v: any) => {
 
 const makeGetFoo = (v: any, e: Entity): RequestHandler => {
   
-  const example = {
-    request: {},
-    response:{}
-  };
+  const r = new Route({
+    request: {
+      headers:{
+      
+      }
+    },
+    response:{
+      body: {
+        success: {
+          foo: 'yes'
+        }
+      }
+    }
+  });
   
-  interface Route extends RouteBase {
-    response: typeof example.response
-    request: typeof example.request
-  }
   
+  type SuccessResponse = typeof r.info.response.body.success;
   
-  e.addRoute<Route>({
-    path: ''
+  e.addRoute<typeof r.info>({
+    path: '',
+    example: r.info
   });
   
   return (req, res, next) => {
-    
-    res.json(<Route['response']>{success: true});
+  
+  
+    const headers = req.headers.foo;
+  
+    res.json(<SuccessResponse> {foo:''});
     
   };
   

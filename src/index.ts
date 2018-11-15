@@ -5,6 +5,7 @@ import {RequestHandler} from 'express';
 import log from './logger';
 import * as safe from '@oresoftware/safe-stringify';
 import chalk from 'chalk';
+import {RouteBase} from '../dist';
 
 export const r2gSmokeTest = function () {
   // r2g command line app uses this exported function
@@ -15,12 +16,9 @@ export interface Headers {
   [key: string]: string
 }
 
-export interface Request<Body = any> {
+export interface Request {
   headers?: Headers;
-  body?:  {
-    success: any,
-    error: any
-  };
+  body?:  any;
   queryParams?: {
     [key: string]: string
   };
@@ -32,8 +30,8 @@ export interface Request<Body = any> {
 export interface Response {
   headers?: Headers;
   body?:{
-    success: any,
-    error: any
+    success?: any,
+    error?: any
   };
 }
 
@@ -47,10 +45,8 @@ export interface RouteInfo {
   // request: Request,
   // response: Response,
   example?: {
-    response: {
-      success: any,
-      error: any
-    }
+    response: Response,
+    request: Request
   }
 }
 
@@ -101,6 +97,17 @@ export const joinMessages = (...args: string[]) => {
   return args.join(' ');
 };
 
+
+export class Route<T extends RouteBase>  {
+  
+  info: T;
+  
+  constructor(v: T) {
+    this.info = v;
+  }
+  
+}
+
 export class DocGen {
   
   filePath: '';
@@ -112,6 +119,7 @@ export class DocGen {
       miscRoutes: {}
     };
   }
+  
   
   createEntity(name: string, routes?: RouteMap): Entity {
     return new Entity(
