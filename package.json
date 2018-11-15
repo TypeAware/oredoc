@@ -1,5 +1,5 @@
 {
-  "name": "typescript-library-skeleton",
+  "name": "oredoc",
   "version": "0.0.1001",
   "description": "Semver-oriented TypeScript library skeleton.",
   "main": "dist/index.js",
@@ -29,10 +29,14 @@
     "url": "https://github.com/ORESoftware/typescript-library-skeleton/issues"
   },
   "homepage": "https://github.com/ORESoftware/typescript-library-skeleton#readme",
-  "dependencies": {},
+  "dependencies": {
+    "@oresoftware/safe-stringify": "0.0.1001",
+    "chalk": "^2.4.1"
+  },
   "devDependencies": {
     "@types/core-js": "^0.9.46",
     "@types/express": "^4.16.0",
-    "@types/node": "^9.6.2"
+    "@types/node": "^9.6.2",
+    "express": "^4.16.4"
   }
 }
