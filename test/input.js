@@ -15,7 +15,6 @@ exports.entities = {
         
         req: {
           headers: {
-            [literal]: true,
             'x-requested-by':'foo'
           },
           body: {
@@ -45,7 +44,7 @@ exports.entities = {
     PUT: {
       
       basic: {
-  
+        
         [interfac]: true,
         path: '/foo',
         
@@ -65,7 +64,7 @@ exports.entities = {
     GET: {
   
       basic: {
-  
+        
         [interfac]: true,
     
         path: '/foo',

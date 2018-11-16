@@ -1,21 +1,35 @@
 import * as path from 'path';
 import * as assert from 'assert';
+import {interfac,type,literal} from './symbols';
+import {joinMessages} from './main';
 
-const getString = (v: boolean | string | number) => {
+const getString = (v: boolean | string | number, isLiteral: boolean) => {
   
   if (typeof v === 'boolean') {
-    return 'boolean';
+    return isLiteral ? v : 'boolean';
   }
   
   if (typeof v === 'string') {
-    return `'${v}'`;
+     if(isLiteral) {
+       return `'${v}'`
+     }
+     if(v === 'string'){
+       return 'string';
+     }
+     if(v === 'boolean'){
+       return 'boolean';
+     }
+     if(v === 'number'){
+       return 'number';
+     }
+     
   }
   
   if (typeof v === 'number') {
-    return 'number';
+    return isLiteral ? v : 'number';
   }
   
-  throw new Error('primitive not recognized: ' + typeof v);
+  throw new Error(joinMessages('primitive not recognized:', v, typeof v));
 };
 
 export const generate = (src: string) => {
@@ -35,14 +49,13 @@ export const generate = (src: string) => {
     
     const space = new Array(spaceCount).fill(null).join(' ');
     
+    const isLiteral = v[type] !== true;
+    
     for (let k of Object.keys(v)) {
       
-      if(k === '@interface'){
-        continue;
-      }
       
       if (!(v[k] && typeof v[k] === 'object')) {
-        const val = getString(v[k]);
+        const val = getString(v[k], isLiteral);
         
         if(/[^a-zA-z0-9]/.test(k)){
           k = `'${k}'`;
@@ -63,7 +76,7 @@ export const generate = (src: string) => {
       let startInterface = false;
       
       try {
-        startInterface = v[k]['@interface'] === true;
+        startInterface = v[k][interfac] === true;
       }
       catch (err) {
         // ignore
