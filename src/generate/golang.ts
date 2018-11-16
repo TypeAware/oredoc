@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as assert from 'assert';
 import * as cp from 'child_process';
 import * as fs from 'fs'
-import {interfac, type, literal} from '../symbols';
+import {interfac, type, literal, struct} from '../symbols';
 import {joinMessages} from '../main';
 import * as async from 'async';
 
@@ -20,12 +20,11 @@ const getString = (v: boolean | string | number, isLiteral: boolean) => {
       return 'string';
     }
     if (v === 'boolean') {
-      return 'boolean';
+      return 'bool';
     }
     if (v === 'number') {
-      return 'number';
+      return 'int';
     }
-    
   }
   
   if (typeof v === 'number') {
@@ -44,7 +43,7 @@ const handleInterface = (v: any, k: string, dir: string) => {
   const strm = fs.createWriteStream(f);
   strm.write(`package ${bn}\n\n`);
   
-  strm.write(`type ${k} struct {\n`);
+  // strm.write(`type ${k} struct {\n`);
   const loop = (v: any, spaceCount: number) => {
     
     const space = new Array(spaceCount).fill(null).join(' ');
@@ -71,7 +70,7 @@ const handleInterface = (v: any, k: string, dir: string) => {
   };
   
   loop(v, 0);
-  strm.end('}\n');
+  strm.end('\n');
   
 };
 
@@ -107,22 +106,32 @@ export const generate = (root: string, src: string) => {
         
         for (let k of Object.keys(v)) {
           
+          if (!(v[k] && typeof v[k] === 'object')) {
+            const val = getString(v[k], isLiteral);
+            
+            if (/[^a-zA-z0-9]/.test(k)) {
+              k = `'${k}'`;
+            }
+            
+            continue;
+          }
+          
           const nextDir = path.resolve(dir, String(k).toLowerCase());
-          let startInterface = false;
+          let startStruct = false;
           
           try {
-            startInterface = v[k][interfac] === true;
+            startStruct = v[k][struct] === true;
           }
           catch (err) {
             // ignore
           }
           
-          if (!startInterface) {
+          if (!startStruct) {
             loop(nextDir, v[k], spaceCount + 2);
             continue;
           }
           
-          handleInterface(v, k, dir);
+          handleInterface(v[k], k, dir);
         }
       });
     });
