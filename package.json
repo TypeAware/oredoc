@@ -31,9 +31,11 @@
   "homepage": "https://github.com/ORESoftware/typescript-library-skeleton#readme",
   "dependencies": {
     "@oresoftware/safe-stringify": "0.0.1001",
+    "async": "^2.6.1",
     "chalk": "^2.4.1"
   },
   "devDependencies": {
+    "@types/async": "^2.0.50",
     "@types/express": "^4.16.0",
     "@types/node": "^9.6.2",
     "express": "^4.16.4"

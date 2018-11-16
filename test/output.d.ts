@@ -18,6 +18,21 @@ export namespace Entities {
          }
        }
      }
+     export interface tragic {
+       path: '/foo',
+       req: {
+         headers: {
+           'x-requested-by': 'foo',
+         }
+         body: {
+           foo: string,
+         }
+       }
+       res: {
+         headers: {
+         }
+       }
+     }
    }
    export namespace GET {
    }

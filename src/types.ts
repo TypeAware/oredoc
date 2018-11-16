@@ -9,9 +9,11 @@ export namespace Entities {
       export  namespace Basic {
       
         export interface Req {
-          headers: {},
+          headers: {
+            zoomHeader: 5
+          },
           body: {
-          
+            zoomBody: '44'
           }
         }
       

@@ -28,6 +28,26 @@ exports.entities = {
           headers: {}
           
         }
+      },
+  
+      tragic: {
+    
+        [interfac]: true,
+        path: '/foo',
+    
+        req: {
+          headers: {
+            'x-requested-by':'foo'
+          },
+          body: {
+            [type]: true,
+            foo:'string',
+          }
+        },
+        res: {
+          headers: {}
+      
+        }
       }
     },
     

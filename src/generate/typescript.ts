@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as assert from 'assert';
-import {interfac,type,literal} from './symbols';
-import {joinMessages} from './main';
+import {interfac,type,literal} from '../symbols';
+import {joinMessages} from '../main';
 
 const getString = (v: boolean | string | number, isLiteral: boolean) => {
   
@@ -102,4 +102,4 @@ export const generate = (src: string) => {
   
 };
 
-generate(path.resolve(__dirname + '/../test/input.js'));
+generate(path.resolve(__dirname + '/../../test/input.js'));
