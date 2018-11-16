@@ -1,17 +1,20 @@
 export namespace Entities {
  export namespace foo {
    export namespace PUT {
-     export interface basic {
+     export namespace basic {
        path: '/foo',
-       req: {
-         headers: {
+       export namespace req {
+         export namespace headers {
            'x-requested-by': 'foo',
          }
-         body: {
+         export namespace body {
+           foo: 'string',
+           bar: 'number',
+           zoom: 'boolean',
          }
        }
-       res: {
-         headers: {
+       export namespace res {
+         export namespace headers {
          }
        }
      }
@@ -21,31 +24,31 @@ export namespace Entities {
  }
  export namespace bar {
    export namespace PUT {
-     export interface basic {
+     export namespace basic {
        path: '/foo',
-       req: {
-         headers: {
+       export namespace req {
+         export namespace headers {
          }
-         body: {
+         export namespace body {
          }
        }
-       res: {
-         headers: {
+       export namespace res {
+         export namespace headers {
          }
        }
      }
    }
    export namespace GET {
-     export interface basic {
+     export namespace basic {
        path: '/foo',
-       req: {
-         headers: {
+       export namespace req {
+         export namespace headers {
          }
-         body: {
+         export namespace body {
          }
        }
-       res: {
-         headers: {
+       export namespace res {
+         export namespace headers {
          }
        }
      }
