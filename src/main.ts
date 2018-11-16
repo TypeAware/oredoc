@@ -104,14 +104,14 @@ export class RouteMulti<Req extends Request, Res extends Response>  {
   
   constructor(req: Req, res: Res) {
   
-    this.req = Object.assign({
+    this.req = (<any>Object).assign({
       headers: {},
       queryParams: {},
       parsedQueryParams: {},
       body: {}
     }, req);
   
-    this.res = Object.assign({
+    this.res = (<any>Object).assign({
       headers: {},
       body: {}
     }, res);

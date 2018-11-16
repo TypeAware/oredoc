@@ -3,7 +3,31 @@ import {RouteBaseMulti} from './main';
 export namespace Entities {
   
   export namespace Foo {
-  
+    
+    export namespace GET {
+    
+      export  namespace Basic {
+      
+        export interface Req {
+          headers: {},
+          body: {
+          
+          }
+        }
+      
+        export  interface Res {
+          headers: {},
+          body: {
+            foo1: number,
+            foo2: string,
+            foo3: boolean
+          }
+        }
+      
+      }
+    
+    }
+    
     export namespace PUT {
   
       export  namespace Basic {
@@ -11,7 +35,7 @@ export namespace Entities {
         export interface Req {
           headers: {},
           body: {
-            foo: string
+            bar: string
           }
         }
         

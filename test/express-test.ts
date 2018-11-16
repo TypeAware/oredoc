@@ -15,31 +15,15 @@ export const register = (v: any) => {
 
 const makeGetFoo = (v: any, e: Entity): RequestHandler => {
   
-  type Req = Entities.Foo.PUT.Basic.Req;
-  type Res = Entities.Foo.PUT.Basic.Res;
-  
-  const r = new RouteMulti({
-    headers: <Req['headers']>{},
-    body: <Req['body']>{}
-  }, {
-    body: <Res['body']>{
-      foo: 5
-    }
-  });
-  
-  
-  type SuccessResponse = typeof r.res.body;
-  
-  e.addRoute({
-    path: '',
-    example: r
-  });
+  type Req = Entities.Foo.GET.Basic.Req;
+  type Res = Entities.Foo.GET.Basic.Res;
   
   return (req, res, next) => {
     
+    const body = <Req['body']>req.body;
     const headers = req.headers.foo;
     
-    res.json(<SuccessResponse> {foo: 4});
+    res.json(<Res['body']> {foo1: 4});
     
   };
   
@@ -47,13 +31,15 @@ const makeGetFoo = (v: any, e: Entity): RequestHandler => {
 
 const makePutFoo = (v: any, e: Entity): RequestHandler => {
   
-  interface Response {
+  type Req = Entities.Foo.PUT.Basic.Req;
+  type Res = Entities.Foo.PUT.Basic.Res;
   
-  }
   
   return (req, res, next) => {
     
-    res.json(<Response>{success: 'f'});
+    const headers = req.headers.foo;
+    
+    res.json(<Res['body']>{foo: 5});
     
   };
   
