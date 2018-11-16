@@ -35,6 +35,21 @@ export namespace Entities {
      }
    }
    export namespace GET {
+     export interface miasmic {
+       path: '/foo',
+       req: {
+         headers: {
+           'x-requested-by': 'foo',
+         }
+         body: {
+           foo: string,
+         }
+       }
+       res: {
+         headers: {
+         }
+       }
+     }
    }
  }
  export namespace bar {
