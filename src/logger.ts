@@ -4,3 +4,8 @@ export const log = {
 };
 
 export default log;
+
+
+export interface Foo {
+  v: []
+}

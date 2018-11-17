@@ -1,29 +1,39 @@
 'use strict';
 
-const {type, interfac, literal, struct} = require('../dist/symbols');
+const {type, interfac, literal, struct, inline} = require('../dist/symbols');
 const {defaultInt, defaultString, defaultBoolean} = require('../dist/defaults');
 
 const set = (...args) => {
   const o = args.pop();
-  for(let v of args){
+  for (let v of args) {
     o[v] = true;
   }
   return o;
 };
 
 exports.entities = {
-  
+
+  Inner: {
+    Zoom: set(interfac,{
+
+    })
+  },
+
   foo: {
-    
+
     PUT: {
-    
-      basic: set(interfac,{
+
+      basic: set(interfac, {
+        zoom: set(inline, [
+          {dog: defaultString, pig: defaultBoolean}
+        ]),
+        faz: set(['Entities.Inner.Zoom', 'Froom', 'Star']),
         path: '/foo',
         req: set(struct, {
           headers: {
-            'x-requested-by':'foo'
+            'x-requested-by': 'foo'
           },
-          body: set(type,{
+          body: set(type, {
             // foo: 'string',
             // bar:'number',
             // zoom: 'boolean'
@@ -36,41 +46,41 @@ exports.entities = {
           headers: {}
         })
       }),
-  
+
       tragic: {
         [interfac]: true,
         path: '/foo',
         req: {
           [struct]: true,
           headers: {
-            'x-requested-by':'foo'
+            'x-requested-by': 'foo'
           },
           body: {
             [type]: true,
-            foo:'string',
+            foo: 'string',
           }
         },
         res: {
           [struct]: true,
           headers: {}
-      
+
         }
       }
     },
-    
+
     GET: {
-      
+
       miasmic: {
         [interfac]: true,
         path: '/foo',
         req: {
           [struct]: true,
           headers: {
-            'x-requested-by':'foo'
+            'x-requested-by': 'foo'
           },
           body: {
             [type]: true,
-            foo:'string',
+            foo: 'string',
           }
         },
         res: {
@@ -80,12 +90,12 @@ exports.entities = {
       }
     }
   },
-  
-  
+
+
   bar: {
-    
+
     PUT: {
-     
+
       basic: {
         [interfac]: true,
         path: '/foo',
@@ -93,7 +103,7 @@ exports.entities = {
           [struct]: true,
           headers: {},
           body: {}
-          
+
         },
         res: {
           [struct]: true,
@@ -101,7 +111,7 @@ exports.entities = {
         }
       }
     },
-    
+
     GET: {
       basic: {
         [interfac]: true,
@@ -116,8 +126,8 @@ exports.entities = {
           headers: {}
         }
       }
-      
+
     }
   },
-  
+
 };

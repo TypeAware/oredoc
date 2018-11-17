@@ -1,7 +1,16 @@
 export namespace Entities {
+ export namespace Inner {
+   export interface Zoom {
+   }
+ }
  export namespace foo {
    export namespace PUT {
      export interface basic {
+       zoom: Array<{
+         dog: string,
+         pig: boolean,
+       }>
+       faz: Array<Entities.Inner.Zoom<Froom<Star>>>,
        path: '/foo',
        req: {
          headers: {
@@ -83,4 +92,5 @@ export namespace Entities {
        }
      }
    }
- }}
+ }
+}
