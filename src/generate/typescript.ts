@@ -1,9 +1,22 @@
 import * as path from 'path';
 import * as assert from 'assert';
 import {interfac,type,literal} from '../symbols';
+import {defaultBoolean, defaultInt, defaultString} from "../defaults";
 import {joinMessages} from '../main';
 
-const getString = (v: boolean | string | number, isLiteral: boolean) => {
+const getString = (v: any, isLiteral: boolean) => {
+
+  if(v === defaultInt){
+    return defaultInt['typescript'];
+  }
+
+  if(v === defaultString){
+    return defaultString['typescript'];
+  }
+
+  if(v === defaultBoolean){
+    return defaultBoolean['typescript'];
+  }
   
   if (typeof v === 'boolean') {
     return isLiteral ? v : 'boolean';
@@ -50,11 +63,11 @@ export const generate = (src: string) => {
     const space = new Array(spaceCount).fill(null).join(' ');
     
     const isLiteral = v[type] !== true;
-    
+
     for (let k of Object.keys(v)) {
       
-      
-      if (!(v[k] && typeof v[k] === 'object')) {
+
+      if(!isLiteral || !(v[k] && typeof v[k] === 'object')){
         const val = getString(v[k], isLiteral);
         
         if(/[^a-zA-z0-9]/.test(k)){
@@ -98,7 +111,7 @@ export const generate = (src: string) => {
   
   loop(input.entities, 2, false);
   
-  console.log(result.join('\n') + '}')
+  console.log(result.join('\n') + '\n}')
   
 };
 

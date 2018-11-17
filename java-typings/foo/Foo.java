@@ -6,16 +6,22 @@ class Z {
 
 public class Foo {
 
-    public static class FooChild extends Z {
+    public static class Star extends Z {
         String foo;
+        public static class Car {
+
+        }
     }
 
-    public static class ZeeChild extends Z {
+    public static class Zee extends Z {
 
+        public static class Mars {
+
+        }
     }
 
     public void zoom(){
-        Object z = new Foo.ZeeChild(){};
+        Object z = new Foo.Star(){};
     }
 
 }

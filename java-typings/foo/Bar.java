@@ -4,7 +4,7 @@ public class Bar {
 
     public static void main(String[] args){
 
-        Foo.FooChild f = new Foo.FooChild();
+        Foo.Star.Car f = new Foo.Star.Car();
         System.out.println(f);
 
     }
