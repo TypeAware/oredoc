@@ -2,4 +2,5 @@ package get
 
 import "./miasmic"
 
-type Miasmic = miasmic.Foo
+type MiasmicReq = miasmic.Req
+type MiasmicRes = miasmic.Res

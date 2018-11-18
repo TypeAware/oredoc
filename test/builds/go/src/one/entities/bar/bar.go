@@ -3,5 +3,7 @@ package bar
 import "./put"
 import "./get"
 
-type Put = put.Foo
-type Get = get.Foo
+type PutBasicReq = put.BasicReq
+type PutBasicRes = put.BasicRes
+type GetBasicReq = get.BasicReq
+type GetBasicRes = get.BasicRes

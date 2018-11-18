@@ -5,7 +5,12 @@ import * as fs from 'fs'
 import {interfac, type, literal, struct, entity} from '../symbols';
 import {joinMessages} from '../main';
 import * as async from 'async';
+import {Writable} from "stream";
 
+
+const flattenDeep = (v: Array<any>): Array<any> => {
+  return v.reduce((acc, val) => Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val), []);
+};
 
 const getString = (v: any, isLiteral: boolean) => {
 
@@ -82,8 +87,8 @@ const handleInterface = (v: any, dir: string) => {
 
 };
 
-const  capitalizeFirstChar = (txt: string) : string =>  {
-  return txt.charAt(0).toUpperCase() + txt.slice(1);
+const capitalizeFirstChar = (txt: string): string => {
+  return txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase();
 };
 
 export const generate = (root: string, src: string) => {
@@ -128,9 +133,26 @@ export const generate = (root: string, src: string) => {
 
     process.nextTick(() => {
 
-      const loop = (ent: EntitiesMap) => {
+      interface ResultMap {
+        childField: string,
+        allFields: string
+      }
 
-        let strm = null;
+      interface AllObj {short:string,long: string}
+
+
+
+      const loop = (ent: EntitiesMap): Array<AllObj> => {
+
+        let strm: Writable = null;
+        let nextVal = capitalizeFirstChar(ent.packageName);
+
+        if (ent.children.length === 0) {
+          return [{
+            short:'',
+            long:nextVal
+          }];
+        }
 
         if (ent.entity) {
           strm = fs.createWriteStream(ent.filePath);
@@ -144,19 +166,31 @@ export const generate = (root: string, src: string) => {
           }
 
           strm.write('\n');
-
-          for (let v of ent.children) {
-            strm.write(`type ${capitalizeFirstChar(v.packageName)} = ${v.packageName}.Foo\n`);
-          }
-
-          strm.end();
-
         }
 
+
+        let names: Array<AllObj> = [];
 
         for (let v of ent.children) {
-          loop(v);
+          loop(v).forEach(cn => {
+            const name = nextVal + cn.long;
+            console.log({name});
+            names.push({
+              short: cn.long,
+              long: nextVal + cn.long
+            });
+            if (strm) {
+              strm.write(`type ${cn.long} = ${v.packageName}.${cn.short}\n`);
+            }
+          });
         }
+
+        if (strm) {
+          strm.end();
+        }
+
+        return names;
+
       };
 
       loop(ent);
@@ -211,8 +245,6 @@ export const generate = (root: string, src: string) => {
             children: [],
             entity: startEntity
           };
-
-          console.error(ent.fileName, ent.filePath);
 
           if (!(rhs && typeof rhs === 'object')) {
             const val = getString(rhs, isLiteral);

@@ -2,4 +2,5 @@ package get
 
 import "./basic"
 
-type Basic = basic.Foo
+type BasicReq = basic.Req
+type BasicRes = basic.Res

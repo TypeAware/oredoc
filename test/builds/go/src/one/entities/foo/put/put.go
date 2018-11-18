@@ -3,5 +3,7 @@ package put
 import "./basic"
 import "./tragic"
 
-type Basic = basic.Foo
-type Tragic = tragic.Foo
+type BasicReq = basic.Req
+type BasicRes = basic.Res
+type TragicReq = tragic.Req
+type TragicRes = tragic.Res

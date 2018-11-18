@@ -1,9 +1,48 @@
-const s = Symbol('foo');
+function joinNames(node) {
 
-const v = [1,2,3];
+  if (node.children.length === 0) {
+    return [node.name];
+  }
+  let names = [];
 
-v[s] = true;
+  node.children.forEach(n => {
+    joinNames(n).forEach(cn => {
+      names.push(node.name + cn)
+    });
+  });
 
-console.log(v);
+  return names;
+}
 
-v.forEach(v => console.log(v));
+const m = {
+  name: 'Foo',
+  children: [{
+    name: 'Baz1',
+    children: [{
+      name: 'Baz3',
+      children: []
+    },
+      {
+        name: 'Baz2',
+        children: [{
+          name: 'Baz4',
+          children: []
+        },
+          {
+            name: 'Baz5',
+            children: []
+          }
+        ]
+      }
+    ]
+  },
+    {
+      name: 'Bar',
+      children: []
+    }
+  ]
+};
+
+
+console.log(joinNames(m));
+console.log(joinNames(m.children[0])); // 'Baz1' as root
