@@ -7,7 +7,7 @@ import (
 
 func main(){
 
-	v := bar.Get.Basic.Req.Headers{}
-	log.Fatal(v)
+	v := bar.PutBasicReq{}
+	log.Fatal("Penis",v)
 
 }

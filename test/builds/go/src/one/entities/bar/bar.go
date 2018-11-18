@@ -1,9 +1,7 @@
 package bar
 
-import "./put"
-import "./get"
+import "one/entities/bar/put"
 
 type PutBasicReq = put.BasicReq
 type PutBasicRes = put.BasicRes
-type GetBasicReq = get.BasicReq
-type GetBasicRes = get.BasicRes
+

@@ -1,7 +1,6 @@
 package basic
 
-import "./req"
-import "./res"
+import "one/entities/bar/put/basic/req"
 
-type Req = req.
-type Res = res.
+type Req = req.Headers
+type Res = req.Body

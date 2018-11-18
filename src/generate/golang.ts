@@ -138,9 +138,10 @@ export const generate = (root: string, src: string) => {
         allFields: string
       }
 
-      interface AllObj {short:string,long: string}
-
-
+      interface AllObj {
+        short:string,
+        long: string
+      }
 
       const loop = (ent: EntitiesMap): Array<AllObj> => {
 
