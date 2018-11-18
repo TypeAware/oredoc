@@ -5,6 +5,12 @@ import {RequestHandler} from 'express';
 import log from './logger';
 import * as safe from '@oresoftware/safe-stringify';
 import chalk from 'chalk';
+import * as symbols from './symbols';
+export {symbols};
+
+import * as defaults from './defaults';
+export {defaults};
+
 
 export const r2gSmokeTest = function () {
   // r2g command line app uses this exported function

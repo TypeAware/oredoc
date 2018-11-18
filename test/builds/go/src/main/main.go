@@ -8,6 +8,6 @@ import (
 func main(){
 
 	v := bar.PutBasicReq{}
-	log.Fatal("Penis",v)
+	log.Fatal("Dog",v, "Dang")
 
 }

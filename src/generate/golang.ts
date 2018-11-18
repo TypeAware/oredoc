@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as assert from 'assert';
 import * as cp from 'child_process';
 import * as fs from 'fs'
-import {interfac, type, literal, struct, entity} from '../symbols';
+import {ts, type, literal, go} from '../symbols';
 import {joinMessages} from '../main';
 import * as async from 'async';
 import {Writable} from "stream";
@@ -262,14 +262,14 @@ export const generate = (root: string, src: string) => {
           let startStruct = false; // startEntity = false;
 
           try {
-            startStruct = v[k][struct] === true;
+            startStruct = v[k][go.struct] === true;
           }
           catch (err) {
             // ignore
           }
 
           try {
-            startEntity = startEntity || v[k][entity] === true;
+            startEntity = startEntity || v[k][go.entity] === true;
           }
           catch (err) {
             // ignore

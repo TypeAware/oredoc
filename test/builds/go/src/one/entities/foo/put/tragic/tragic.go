@@ -1,4 +1,4 @@
-package basic
+package tragic
 
 import "./req"
 import "./res"

@@ -1,6 +1,6 @@
 'use strict';
 
-const {type, interfac, literal, struct, inline} = require('../../../../dist/symbols');
+const {type, ts, literal, go, inline} = require('../../../../dist/symbols');
 const {defaultInt, defaultString, defaultBoolean} = require('../../../../dist/defaults');
 
 const set = (...args) => {
@@ -14,7 +14,7 @@ const set = (...args) => {
 exports.entities = {
 
   Inner: {
-    Zoom: set(interfac,{
+    Zoom: set(ts.interface,{
 
     })
   },
@@ -23,7 +23,7 @@ exports.entities = {
 
     PUT: {
 
-      basic: set(interfac, {
+      basic: set(ts.interface, {
         zoom: set(inline, [
           {dog: defaultString, pig: defaultBoolean, roop:[{}]}
         ]),
@@ -35,7 +35,7 @@ exports.entities = {
         ]),
         faz: set(['Entities.Inner.Zoom', 'Froom', 'Star']),
         path: '/foo',
-        req: set(struct, {
+        req: set(go.struct, {
           headers: {
             'x-requested-by': 'foo'
           },
@@ -48,52 +48,43 @@ exports.entities = {
             zoom: defaultBoolean
           })
         }),
-        res: set(struct, {
+        res: set(go.struct, {
           headers: {}
         })
       }),
 
-      tragic: {
-        [interfac]: true,
+      tragic: set(ts.interface,{
         path: '/foo',
-        req: {
-          [struct]: true,
+        req: set(go.struct,{
           headers: {
             'x-requested-by': 'foo'
           },
-          body: {
-            [type]: true,
-            foo: 'string',
-          }
-        },
-        res: {
-          [struct]: true,
+          body: set(type,{
+            foo: 'string'
+          })
+        }),
+        res: (go.struct, {
           headers: {}
-
-        }
-      }
+        })
+      })
     },
 
     GET: {
 
-      miasmic: {
-        [interfac]: true,
+      miasmic: set(ts.interface,{
         path: '/foo',
-        req: {
-          [struct]: true,
+        req: set(go.struct,{
           headers: {
             'x-requested-by': 'foo'
           },
-          body: {
-            [type]: true,
+          body: set(type,{
             foo: 'string',
-          }
-        },
-        res: {
-          [struct]: true,
+          })
+        }),
+        res: set(go.struct,{
           headers: {}
-        }
-      }
+        })
+      })
     }
   },
 
@@ -102,36 +93,29 @@ exports.entities = {
 
     PUT: {
 
-      basic: {
-        [interfac]: true,
+      basic: set(ts.interface,{
         path: '/foo',
-        req: {
-          [struct]: true,
+        req: set(go.struct,{
           headers: {},
           body: {}
-
-        },
-        res: {
-          [struct]: true,
+        }),
+        res: set(go.struct,{
           headers: {}
-        }
-      }
+        })
+      })
     },
 
     GET: {
-      basic: {
-        [interfac]: true,
+      basic: set(ts.interface,{
         path: '/foo',
-        req: {
-          [struct]: true,
+        req: set(go.struct,{
           headers: {},
           body: {}
-        },
-        res: {
-          [struct]: true,
+        }),
+        res: set(go.struct,{
           headers: {}
-        }
-      }
+        })
+      })
 
     }
   },

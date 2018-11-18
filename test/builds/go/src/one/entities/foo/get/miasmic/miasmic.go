@@ -1,4 +1,4 @@
-package basic
+package miasmic
 
 import "./req"
 import "./res"

@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as assert from 'assert';
-import {interfac, type, literal} from '../symbols';
+import {ts, type, literal} from '../symbols';
 import {joinMessages} from '../main';
 import {defaultBoolean, defaultInt, defaultString} from "../defaults";
 
@@ -144,7 +144,7 @@ export const generate = (src: string) => {
       let startInterface = false;
 
       try {
-        startInterface = v[k][interfac] === true;
+        startInterface = v[k][ts.interface] === true;
       }
       catch (err) {
         // ignore
