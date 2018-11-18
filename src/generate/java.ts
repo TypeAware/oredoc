@@ -165,7 +165,6 @@ export const generate = (src: string) => {
   };
 
   loop(input.entities, 2, false);
-
   console.log(result.join('\n') + '\n}')
 
 };

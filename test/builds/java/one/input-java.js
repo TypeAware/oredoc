@@ -1,51 +1,54 @@
 'use strict';
 
-const {type, interfac, literal, struct, inline} = require('../dist/symbols');
-const {defaultInt, defaultString, defaultBoolean} = require('../dist/defaults');
+const {type, interfac, literal, struct} = require('../../../../dist/symbols');
+const {defaultInt, defaultString, defaultBoolean} = require('../../../../dist/defaults');
 
 const set = (...args) => {
   const o = args.pop();
-  for (let v of args) {
+  for(let v of args){
     o[v] = true;
   }
   return o;
 };
 
-exports.entities = {
+const custom = {
 
-  Inner: {
-    Zoom: set(interfac,{
-
-    })
+  int: {
+    golang:'int8',
+    java: 'int',
+    typescript:'number'
   },
+  string: {
+    golang:'string',
+    java: 'String',
+    typescript:'string'
+  },
+  bool: {
+    golang:'bool',
+    java: 'boolean',
+    typescript:'boolean'
+  }
+
+};
+
+
+
+exports.entities = {
 
   foo: {
 
     PUT: {
 
-      basic: set(interfac, {
-        zoom: set(inline, [
-          {dog: defaultString, pig: defaultBoolean, roop:[{}]}
-        ]),
-        boom: set(inline, [
-         defaultString
-        ]),
-        toom: set(inline, [
-          []
-        ]),
-        faz: set(['Entities.Inner.Zoom', 'Froom', 'Star']),
+      basic: set(interfac,{
         path: '/foo',
         req: set(struct, {
           headers: {
-            'x-requested-by': 'foo'
+            'x-requested-by':'foo'
           },
-          body: set(type, {
-            // foo: 'string',
-            // bar:'number',
-            // zoom: 'boolean'
-            foo: defaultString,
-            bar: defaultInt,
-            zoom: defaultBoolean
+          body: set(type,{
+            foo: [custom.string, `'bar'`],
+            bar: [custom.int, 5],
+            zoom: [custom.bool, false]
           })
         }),
         res: set(struct, {
@@ -59,11 +62,11 @@ exports.entities = {
         req: {
           [struct]: true,
           headers: {
-            'x-requested-by': 'foo'
+            'x-requested-by':'foo'
           },
           body: {
             [type]: true,
-            foo: 'string',
+            foo:'string',
           }
         },
         res: {
@@ -82,11 +85,11 @@ exports.entities = {
         req: {
           [struct]: true,
           headers: {
-            'x-requested-by': 'foo'
+            'x-requested-by':'foo'
           },
           body: {
             [type]: true,
-            foo: 'string',
+            foo:'string',
           }
         },
         res: {

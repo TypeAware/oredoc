@@ -1,4 +1,5 @@
 package get
 
 import "./miasmic"
-type Foo = miasmic.go
+
+type Miasmic = miasmic.Foo

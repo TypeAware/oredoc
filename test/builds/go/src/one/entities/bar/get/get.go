@@ -1,4 +1,5 @@
 package get
 
 import "./basic"
-type Foo = basic.go
+
+type Basic = basic.Foo

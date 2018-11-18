@@ -2,5 +2,6 @@ package put
 
 import "./basic"
 import "./tragic"
-type Foo = basic.go
-type Foo = tragic.go
+
+type Basic = basic.Foo
+type Tragic = tragic.Foo

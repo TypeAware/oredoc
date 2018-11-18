@@ -7,8 +7,6 @@ import {joinMessages} from '../main';
 import * as async from 'async';
 
 
-let count = 0;
-
 const getString = (v: any, isLiteral: boolean) => {
 
   if (typeof v === 'boolean') {
@@ -84,6 +82,10 @@ const handleInterface = (v: any, dir: string) => {
 
 };
 
+const  capitalizeFirstChar = (txt: string) : string =>  {
+  return txt.charAt(0).toUpperCase() + txt.slice(1);
+};
+
 export const generate = (root: string, src: string) => {
 
   const input = require(src);
@@ -141,8 +143,10 @@ export const generate = (root: string, src: string) => {
             strm.write(`import "./${v.packageName}"\n`)
           }
 
+          strm.write('\n');
+
           for (let v of ent.children) {
-            strm.write(`type Foo = ${v.fileName}\n`);
+            strm.write(`type ${capitalizeFirstChar(v.packageName)} = ${v.packageName}.Foo\n`);
           }
 
           strm.end();
