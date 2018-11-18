@@ -1,5 +1,0 @@
-package basic
-
- headers struct {
-}
-

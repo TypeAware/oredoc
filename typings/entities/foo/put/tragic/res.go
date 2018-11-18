@@ -1,5 +1,0 @@
-package tragic
-
- headers struct {
-}
-

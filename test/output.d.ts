@@ -9,8 +9,11 @@ export namespace Entities {
        zoom: Array<{
          dog: string,
          pig: boolean,
+         roop: Array<{}>
        }>
-       faz: Array<Entities.Inner.Zoom<Froom<Star>>>,
+       boom: Array<string>
+       toom: Array<Array<any>>
+       faz: Array<string>
        path: '/foo',
        req: {
          headers: {

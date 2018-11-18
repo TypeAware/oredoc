@@ -70,7 +70,7 @@ export const generate = (src: string) => {
     }
 
     const space = new Array(spaceCount).fill(null).join(' ');
-    spaceCount+=2;
+    spaceCount += 2;
 
     const isLiteral = v[type] !== true;
 
@@ -92,34 +92,37 @@ export const generate = (src: string) => {
       if (Array.isArray(rhs)) {
         {
 
-          if ((<any>rhs)[simple] === true) {
-            const type = typeof rhs[0];
-            const literalType = (<any>defaultArrayType)[type]['typescript'];
-            result.push(space + `${k}: Array<${literalType}>`);
-          }
-          else if ((<any>rhs)[inline] === true) {
+          const type = typeof rhs[0];
 
-            const type = rhs[0];
+          if ((<any>rhs)[inline] === true) {
 
-            if(Array.isArray(type)){
+            const firstElem = rhs[0];
+            if (Array.isArray(firstElem)) {
               result.push(space + `${k}: Array<Array<any>>`);
             }
-            else if(type && typeof type === 'object'){
+            else if (hasDefault(firstElem)) {
+              result.push(space + `${k}: Array<${getString(firstElem, isLiteral)}>`);
+            }
+            else if (firstElem && typeof firstElem === 'object') {
               result.push(space + `${k}: Array<{`);
-              loop(type, spaceCount, true);
+              loop(firstElem, spaceCount, true);
               result.push(space + '}>');
             }
-            else{
-              const literalType = (<any>defaultArrayType)[type]['typescript'];
+            else {
+              const literalType = (<any>defaultArrayType)[firstElem]['typescript'];
               result.push(space + `${k}: Array<${literalType}>`);
             }
 
           }
-          else {
+          else if ((<any>rhs)[literal] === true) {
             const literalType = rhs.reverse().reduce((a, b) => {
               return [b, '<', a, '>'].join('');
             });
             result.push(space + `${k}: Array<${literalType}>,`);
+          }
+          else {  // (<any>rhs)[simple] === true
+            const literalType = (<any>defaultArrayType)[type]['typescript'];
+            result.push(space + `${k}: Array<${literalType}>`);
           }
         }
 
@@ -157,7 +160,6 @@ export const generate = (src: string) => {
   };
 
   loop(input.entities, 2, false);
-
   console.log(result.join('\n') + '\n}')
 
 };

@@ -1,7 +1,8 @@
 'use strict';
 
-const {type, interfac, literal, struct, inline} = require('../dist/symbols');
-const {defaultInt, defaultString, defaultBoolean} = require('../dist/defaults');
+const {type, interfac, literal, struct, entity} = require('../../../../../dist/symbols');
+const {defaultInt, defaultString, defaultBoolean} = require('../../../../../dist/defaults');
+
 
 const set = (...args) => {
   const o = args.pop();
@@ -11,45 +12,53 @@ const set = (...args) => {
   return o;
 };
 
+const custom = {
+
+  int: {
+    golang: 'int8',
+    java: 'int',
+    typescript: 'number'
+  },
+  string: {
+    golang: 'string',
+    java: 'String',
+    typescript: 'string'
+  },
+  bool: {
+    golang: 'bool',
+    java: 'boolean',
+    typescript: 'boolean'
+  }
+
+};
+
+
 exports.entities = {
 
-  Inner: {
-    Zoom: set(interfac,{
-
-    })
-  },
-
   foo: {
+
+    [entity]: true,
 
     PUT: {
 
       basic: set(interfac, {
-        zoom: set(inline, [
-          {dog: defaultString, pig: defaultBoolean, roop:[{}]}
-        ]),
-        boom: set(inline, [
-         defaultString
-        ]),
-        toom: set(inline, [
-          []
-        ]),
-        faz: set(['Entities.Inner.Zoom', 'Froom', 'Star']),
         path: '/foo',
-        req: set(struct, {
+        req: set({
+          [struct]: true,
           headers: {
             'x-requested-by': 'foo'
           },
           body: set(type, {
-            // foo: 'string',
-            // bar:'number',
-            // zoom: 'boolean'
-            foo: defaultString,
-            bar: defaultInt,
-            zoom: defaultBoolean
+            foo: [custom.string, `'bar'`],
+            bar: [custom.int, 5],
+            zoom: [custom.bool, false]
           })
         }),
-        res: set(struct, {
-          headers: {}
+        res: set({
+          [struct]: true,
+          headers: {
+
+          }
         })
       }),
 
@@ -63,13 +72,14 @@ exports.entities = {
           },
           body: {
             [type]: true,
-            foo: 'string',
+            foo: 'string'
           }
         },
         res: {
           [struct]: true,
-          headers: {}
+          headers: {
 
+          }
         }
       }
     },
@@ -91,7 +101,8 @@ exports.entities = {
         },
         res: {
           [struct]: true,
-          headers: {}
+          headers: {
+          }
         }
       }
     }
@@ -100,6 +111,8 @@ exports.entities = {
 
   bar: {
 
+    [entity]: true,
+
     PUT: {
 
       basic: {
@@ -107,13 +120,19 @@ exports.entities = {
         path: '/foo',
         req: {
           [struct]: true,
-          headers: {},
-          body: {}
+          headers: {
+
+          },
+          body: {
+
+          }
 
         },
         res: {
           [struct]: true,
-          headers: {}
+          headers: {
+
+          }
         }
       }
     },
@@ -124,12 +143,17 @@ exports.entities = {
         path: '/foo',
         req: {
           [struct]: true,
-          headers: {},
-          body: {}
+          headers: {
+
+          },
+          body: {
+          }
         },
         res: {
           [struct]: true,
-          headers: {}
+          headers: {
+
+          }
         }
       }
 
