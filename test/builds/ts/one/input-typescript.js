@@ -22,7 +22,6 @@ exports.entities = {
   foo: {
 
     PUT: {
-
       basic: set(ts.interface, {
         zoom: set(inline, [
           {dog: defaultString, pig: defaultBoolean, roop:[{}]}
@@ -63,14 +62,13 @@ exports.entities = {
             foo: 'string'
           })
         }),
-        res: (go.struct, {
+        res: set(go.struct, {
           headers: {}
         })
       })
     },
 
     GET: {
-
       miasmic: set(ts.interface,{
         path: '/foo',
         req: set(go.struct,{
@@ -90,10 +88,9 @@ exports.entities = {
 
 
   bar: {
-
     PUT: {
-
       basic: set(ts.interface,{
+        [optional]:['path'],
         path: '/foo',
         req: set(go.struct,{
           headers: {},

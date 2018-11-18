@@ -3,7 +3,6 @@
 const {type, ts, literal, go} = require('../../../../../dist/symbols');
 const {defaultInt, defaultString, defaultBoolean} = require('../../../../../dist/defaults');
 
-
 const set = (...args) => {
   const o = args.pop();
   for (let v of args) {
@@ -76,7 +75,6 @@ exports.entities = {
     },
 
     GET: {
-
       miasmic: set(ts.interface,{
         path: '/foo',
         req: set(go.struct,{
@@ -96,9 +94,7 @@ exports.entities = {
   }),
 
   bar: set(go.entity,{
-
     PUT: {
-
       basic: set(ts.interface,{
         path: '/foo',
         req: set(go.struct,{
@@ -111,7 +107,6 @@ exports.entities = {
         }),
         res: set(go.struct,{
           headers: {
-
           }
         })
       })

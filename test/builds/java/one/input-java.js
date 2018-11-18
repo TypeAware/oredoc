@@ -37,7 +37,6 @@ exports.entities = {
   foo: {
 
     PUT: {
-
       basic: set(ts.interface, {
         path: '/foo',
         req: set(go.struct, {
@@ -56,17 +55,14 @@ exports.entities = {
       }),
 
       tragic: set(ts.interface, {
-
         path: '/foo',
         req: set(go.struct, {
-
           headers: {
             'x-requested-by': 'foo'
           },
           body: set(type, {
             foo: 'string',
           })
-
         }),
         res: set(go.struct, {
           headers: {}
@@ -75,7 +71,6 @@ exports.entities = {
     },
 
     GET: {
-
       miasmic: set(ts.interface, {
         path: '/foo',
         req: set(go.struct, {
@@ -95,7 +90,6 @@ exports.entities = {
 
 
   bar: {
-
     PUT: {
       basic: set(ts.interface, {
         path: '/foo',
@@ -120,8 +114,8 @@ exports.entities = {
           headers: {}
         })
       })
-
     }
   },
 
 };
+
