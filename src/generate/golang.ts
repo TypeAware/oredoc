@@ -6,7 +6,10 @@ import {ts, type, literal, go} from '../symbols';
 import {joinMessages} from '../main';
 import * as async from 'async';
 import {Writable} from "stream";
+import {Lang} from "./shared";
 
+
+const conf = new Lang({lang: 'golang'});
 
 const flattenDeep = (v: Array<any>): Array<any> => {
   return v.reduce((acc, val) => Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val), []);

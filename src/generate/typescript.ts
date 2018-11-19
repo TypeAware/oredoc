@@ -3,11 +3,15 @@ import * as assert from 'assert';
 import {ts, type, literal, inline, simple} from '../symbols';
 import {defaultBoolean, defaultInt, defaultString, defaultArrayType} from "../defaults";
 import {joinMessages} from '../main';
+import {Lang} from "./shared";
+
+const conf = new Lang({lang: 'typescript'});
+
 
 const getString = (v: any, isLiteral: boolean) => {
 
   if (v === defaultInt) {
-    return defaultInt['typescript'];
+    return (defaultInt as any)[conf.lang];
   }
 
   if (v === defaultString) {

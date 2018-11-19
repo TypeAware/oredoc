@@ -1,14 +1,44 @@
-export const defaultNumber = {
+
+
+// export enum defaultNumber  {
+//   'golang' = 'float32',
+//   'java' = 'double',
+//   'typescript' = 'number'
+// }
+//
+// export enum defaultInt {
+//   'golang'= 'int',
+//   'java'= 'int',
+//   'typescript' = 'number'
+// }
+//
+// export enum defaultString  {
+//   'golang' = 'string',
+//   'java' = 'String',
+//   'typescript' = 'string'
+// }
+//
+// export enum defaultBoolean {
+//   'golang' = 'bool',
+//   'java' = 'boolean',
+//   'typescript' = 'boolean'
+// }
+
+ const defaultNumber1 = {
   'golang': 'float32',
   'java': 'double',
   'typescript': 'number'
 };
 
-export const defaultInt = {
+export const defaultNumber = <typeof defaultNumber1>defaultNumber1;
+
+export const defaultInt1 = {
   'golang': 'int',
   'java': 'int',
   'typescript': 'number'
 };
+
+export const defaultInt = defaultInt1 as typeof defaultInt1;
 
 export const defaultString = {
   'golang': 'string',
@@ -21,6 +51,8 @@ export const defaultBoolean = {
   'java': 'boolean',
   'typescript': 'boolean'
 };
+
+
 
 
 export const defaultObject = {

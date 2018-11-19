@@ -3,6 +3,10 @@ import * as assert from 'assert';
 import {ts, type, literal} from '../symbols';
 import {joinMessages} from '../main';
 import {defaultBoolean, defaultInt, defaultString} from "../defaults";
+import {Lang} from "./shared";
+
+const conf = new Lang({lang: 'java'});
+
 
 const getString = (v: any, isLiteral: boolean) => {
 
