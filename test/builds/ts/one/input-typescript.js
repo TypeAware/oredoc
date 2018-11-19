@@ -2,14 +2,9 @@
 
 const {type, ts, literal, go, inline} = require('../../../../dist/symbols');
 const {defaultInt, defaultString, defaultBoolean} = require('../../../../dist/defaults');
+const {set, setArray} = require('../../../../dist/main');
 
-const set = (...args) => {
-  const o = args.pop();
-  for (let v of args) {
-    o[v] = true;
-  }
-  return o;
-};
+
 
 exports.entities = {
 

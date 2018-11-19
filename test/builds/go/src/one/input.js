@@ -3,13 +3,6 @@
 const {type, ts, literal, go} = require('../../../../../dist/symbols');
 const {defaultInt, defaultString, defaultBoolean} = require('../../../../../dist/defaults');
 
-const set = (...args) => {
-  const o = args.pop();
-  for (let v of args) {
-    o[v] = true;
-  }
-  return o;
-};
 
 const custom = {
 

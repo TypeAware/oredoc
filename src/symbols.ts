@@ -7,6 +7,8 @@ export const simple = Symbol('simple.type.inference');
 export const extend = Symbol('generic.extends.keyword');
 export const imports = Symbol('generic.imports.keyword');
 
+export const typeMap = Symbol('custom.type.map');  // user provides custom object, mapping a language to a type
+
 export const go = {
   struct: Symbol('golang.struct'),
   entity: Symbol('golang.entity') // marks where to put an entity.go file that references all subtypes

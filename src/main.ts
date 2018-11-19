@@ -6,10 +6,89 @@ import log from './logger';
 import * as safe from '@oresoftware/safe-stringify';
 import chalk from 'chalk';
 import * as symbols from './symbols';
+
 export {symbols};
 
 import * as defaults from './defaults';
+import * as util from "util";
+
 export {defaults};
+
+
+export const set = (...args: any[]) => {
+  const o = args.pop();
+  if (!(o && typeof o === 'object')) {
+    throw 'Final argument must be a non-array object.';
+  }
+  if (Array.isArray(o)) {
+    throw 'Final argument must be a non-array object.';
+  }
+  for (let v of args) {
+    if (typeof v !== 'symbol') {
+      throw 'Value should be a Symbol, but isnt: ' + v;
+    }
+    o[v] = true;
+  }
+  return o;
+};
+
+export enum Langs {
+  GOLANG = 'golang',
+  TYPESCRIPT = 'typescript',
+  SWIFT = 'swift',
+  JAVA = 'java'
+}
+
+export const typeMap = (v: any) => {
+
+  if (!(v && typeof v === 'object')) {
+    throw 'Argument must be a non-array object.';
+  }
+
+  if (Array.isArray(v)) {
+    throw 'Argument must be a non-array object.';
+  }
+
+  for(let k of v){
+    if(!Langs[k]){
+      throw `The following key is not a recognized language type: ${k}`
+    }
+    if(typeof v !== 'string'){
+      throw `The following object has a key "${k}" that does not point to a string: ` + util.inspect(v);
+    }
+  }
+
+  v[symbols.typeMap] = true;
+  return v;
+};
+
+export const setArray = (...args: any[]) => {
+  const o = args.pop();
+  if (!Array.isArray(o)) {
+    throw 'Final argument must be an array.';
+  }
+  for (let v of args) {
+
+    if (typeof v !== 'symbol') {
+      throw 'Value should be a Symbol, but isnt: ' + v;
+    }
+
+    (o as any)[v] = true;
+  }
+  return o;
+};
+
+export const setTypeMap = (v: object) => {
+
+};
+
+export const setType = (t: string, val?: string) => {
+  return {
+    [symbols.type]: true,
+    type: t,
+    val: val
+  }
+};
 
 
 export const r2gSmokeTest = function () {
@@ -23,7 +102,7 @@ export interface Headers {
 
 export interface Request {
   headers?: Headers;
-  body?:  any;
+  body?: any;
   queryParams?: {
     [key: string]: string
   };
@@ -60,17 +139,17 @@ export interface RouteMap {
 }
 
 export class Entity {
-  
+
   name: string;
   routes: RouteMap;
-  
+
   constructor(name: string, routes?: RouteMap) {
     this.name = name;
     this.routes = routes || {};
   }
-  
+
   addRoute(v: RouteInfo): this {
-    
+
     if (this.routes[v.path]) {
       throw new Error(
         joinMessages(
@@ -78,11 +157,11 @@ export class Entity {
         )
       );
     }
-    
+
     this.routes[v.path] = v;
     return this;
   }
-  
+
   attachTo(d: DocGen): this {
     d.addEntity(this);
     return this;
@@ -103,93 +182,93 @@ export const joinMessages = (...args: string[]) => {
 };
 
 
-export class RouteMulti<Req extends Request, Res extends Response>  {
-  
+export class RouteMulti<Req extends Request, Res extends Response> {
+
   req: Req;
   res: Res;
-  
+
   constructor(req: Req, res: Res) {
-  
+
     this.req = (<any>Object).assign({
       headers: {},
       queryParams: {},
       parsedQueryParams: {},
       body: {}
     }, req);
-  
+
     this.res = (<any>Object).assign({
       headers: {},
       body: {}
     }, res);
-    
+
   }
 }
 
 
 export class DocGen {
-  
+
   filePath: '';
   info: Info;
-  
+
   constructor() {
     this.info = {
       entities: {},
       miscRoutes: {}
     };
   }
-  
-  
+
+
   createEntity(name: string, routes?: RouteMap): Entity {
     return new Entity(
       name,
       routes
     )
   }
-  
+
   createAndAddEntity(name: string, routes?: RouteMap): Entity {
-  
+
     if (this.info.entities[name]) {
       throw new Error(joinMessages('OreDoc already has an entity with name:', name));
     }
-    
-    const entity = this.createEntity(name,routes);
+
+    const entity = this.createEntity(name, routes);
     this.info.entities[entity.name] = entity;
     return entity;
   }
-  
+
   addEntity(v: Entity): this {
-    
+
     if (this.info.entities[v.name]) {
       throw new Error(joinMessages('OreDoc already has an entity with name:', v.name));
     }
-    
+
     this.info.entities[v.name] = v;
     return this;
   }
-  
+
   addMiscRoute(v: RouteInfo): this {
-    
+
     if (this.info.miscRoutes[v.path]) {
       throw new Error(joinMessages('OreDoc already has a misc route with path:', v.path));
     }
-    
+
     this.info.miscRoutes[v.path] = v;
     return this;
   }
-  
+
   addRoute(entity: string, v: RouteInfo): this {
-    
+
     return this;
   }
-  
+
   serialize(): string {
     return safe.stringify(this.info);
   }
-  
+
   serve(): RequestHandler {
-    
+
     return (req, res, next) => {
-      
+
       try {
         res.json(this.info);
       }
@@ -197,10 +276,10 @@ export class DocGen {
         log.error(err);
         next(err);
       }
-      
+
     }
   }
-  
+
 }
 
 
