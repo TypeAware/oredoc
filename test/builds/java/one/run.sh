@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-javac foo/*.java
+dir="$(dirname ${BASH_SOURCE})";
 
-jar -c -m foo/manifest.mf -f foo.jar foo/*.class
+javac "$dir/foo/"*.java
 
-java -jar foo.jar
+jar -c -m "$dir/foo/manifest.mf" -f foo.jar "$dir/foo/"*.class
+
+java -jar "$dir/foo.jar"

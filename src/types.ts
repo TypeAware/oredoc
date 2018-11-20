@@ -1,3 +1,5 @@
+'use strict';
+
 import {RouteBaseMulti} from './main';
 
 export namespace Entities {

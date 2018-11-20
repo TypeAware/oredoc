@@ -2,7 +2,7 @@
 
 const {type, ts, literal, go} = require('../../../../../dist/symbols');
 const {defaultInt, defaultString, defaultBoolean} = require('../../../../../dist/defaults');
-
+const {set, setArray} = require('../../../../../dist/main');
 
 const custom = {
 

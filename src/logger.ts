@@ -1,3 +1,5 @@
+'use strict';
+
 export const log = {
   info: console.log.bind(console, 'oredoc:'),
   error: console.error.bind(console, 'oredoc:'),
@@ -6,6 +8,3 @@ export const log = {
 export default log;
 
 
-export interface Foo {
-  v: []
-}

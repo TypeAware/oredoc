@@ -1,6 +1,6 @@
 'use strict';
 
-const {type, ts, literal, go, inline} = require('../../../../dist/symbols');
+const {type, ts, literal, go, inline, optional} = require('../../../../dist/symbols');
 const {defaultInt, defaultString, defaultBoolean} = require('../../../../dist/defaults');
 const {set, setArray} = require('../../../../dist/main');
 
@@ -18,16 +18,16 @@ exports.entities = {
 
     PUT: {
       basic: set(ts.interface, {
-        zoom: set(inline, [
+        zoom: setArray(inline, [
           {dog: defaultString, pig: defaultBoolean, roop:[{}]}
         ]),
-        boom: set(inline, [
-         defaultString
-        ]),
-        toom: set(inline, [
+        boom: setArray(inline, [defaultString]),
+        toom: setArray(inline, [
           []
         ]),
-        faz: set(['Entities.Inner.Zoom', 'Froom', 'Star']),
+        faz: setArray(literal,[
+          'Entities.Inner.Zoom', 'Froom', 'Star'
+        ]),
         path: '/foo',
         req: set(go.struct, {
           headers: {

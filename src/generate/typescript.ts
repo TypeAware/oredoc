@@ -1,6 +1,8 @@
+'use strict';
+
 import * as path from 'path';
 import * as assert from 'assert';
-import {ts, type, literal, inline, simple} from '../symbols';
+import {ts, type, literal, inline, simple, optional} from '../symbols';
 import {defaultBoolean, defaultInt, defaultString, defaultArrayType} from "../defaults";
 import {joinMessages} from '../main';
 import {Lang} from "./shared";

@@ -18,14 +18,14 @@ export {defaults};
 export const set = (...args: any[]) => {
   const o = args.pop();
   if (!(o && typeof o === 'object')) {
-    throw 'Final argument must be a non-array object.';
+    throw new Error('Final argument must be a non-array object.');
   }
   if (Array.isArray(o)) {
-    throw 'Final argument must be a non-array object.';
+    throw new Error('Final argument must be a non-array object.');
   }
   for (let v of args) {
     if (typeof v !== 'symbol') {
-      throw 'Value should be a Symbol, but isnt: ' + v;
+      throw new Error('Value should be a Symbol, but isnt: ' + v);
     }
     o[v] = true;
   }
@@ -39,38 +39,42 @@ export enum Langs {
   JAVA = 'java'
 }
 
-export const typeMap = (v: any) => {
+interface StringKV {
+  [key:string]: string
+}
+
+export const setType = (v: StringKV) => {
 
   if (!(v && typeof v === 'object')) {
-    throw 'Argument must be a non-array object.';
+    throw new Error('Argument must be a non-array object.');
   }
 
   if (Array.isArray(v)) {
-    throw 'Argument must be a non-array object.';
+    throw new Error('Argument must be a non-array object.');
   }
 
-  for(let k of v){
+  for(let k of <any>v){
     if(!Langs[k]){
-      throw `The following key is not a recognized language type: ${k}`
+      throw new Error(`The following key is not a recognized language: "${k}" - here are the recognized languages: ${util.inspect(Langs)}`)
     }
     if(typeof v !== 'string'){
-      throw `The following object has a key "${k}" that does not point to a string: ` + util.inspect(v);
+      throw new Error(`The following object has a key "${k}" that does not point to a string: ` + util.inspect(v));
     }
   }
 
-  v[symbols.typeMap] = true;
+  (v as any)[symbols.typeMap] = true;
   return v;
 };
 
 export const setArray = (...args: any[]) => {
   const o = args.pop();
   if (!Array.isArray(o)) {
-    throw 'Final argument must be an array.';
+    throw new Error('Final argument must be an array.');
   }
   for (let v of args) {
 
     if (typeof v !== 'symbol') {
-      throw 'Value should be a Symbol, but isnt: ' + v;
+      throw new Error('Value should be a Symbol, but isnt: ' + v);
     }
 
     (o as any)[v] = true;
@@ -82,7 +86,7 @@ export const setTypeMap = (v: object) => {
 
 };
 
-export const setType = (t: string, val?: string) => {
+export const setTypeString = (t: string, val?: string) => {
   return {
     [symbols.type]: true,
     type: t,
