@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
-dir="$(dirname ${BASH_SOURCE})";
+
+dir="$(cd $(dirname "${BASH_SOURCE}") && pwd)";
+
+export CLASSPATH="${CLASSPATH}":"$dir/"*.jar
+
+echo "the classpath: $CLASSPATH";
 
 javac "$dir/foo/"*.java
 
