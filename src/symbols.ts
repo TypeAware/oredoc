@@ -2,7 +2,6 @@
 
 export const literal = Symbol('literal');
 export const type = Symbol('type');
-export const inline = Symbol('inline.array');
 
 /*
 
@@ -36,6 +35,7 @@ export const go = {
 };
 
 export const ts = {
+  inline: Symbol('typescript.inline'), // inline a type
   interface: Symbol('typescript.interface')
 };
 

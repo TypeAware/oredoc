@@ -5,19 +5,18 @@ export namespace Entities {
  }
  export namespace foo {
    export namespace PUT {
+     export interface DogPigRoop {
+       dog: string,
+       pig: boolean,
+       roop: Array<{}>
+       stoop: Array<boolean>
+     }
      export interface basic {
-       zoom: Array<{
-         dog: string,
-         pig: boolean,
-         roop: Array<{}>
-       }>
-       boom: Array<string>
-       toom: Array<Array<any>>
-       faz: Array<string>
-       path: '/foo',
+       zoom: DogPigRoop,
+       path: /foo,
        req: {
          headers: {
-           'x-requested-by': 'foo',
+           x-requested-by: foo,
          }
          body: {
            foo: string,
@@ -31,10 +30,10 @@ export namespace Entities {
        }
      }
      export interface tragic {
-       path: '/foo',
+       path: /foo,
        req: {
          headers: {
-           'x-requested-by': 'foo',
+           x-requested-by: foo,
          }
          body: {
            foo: string,
@@ -48,10 +47,10 @@ export namespace Entities {
    }
    export namespace GET {
      export interface miasmic {
-       path: '/foo',
+       path: /foo,
        req: {
          headers: {
-           'x-requested-by': 'foo',
+           x-requested-by: foo,
          }
          body: {
            foo: string,
@@ -67,7 +66,7 @@ export namespace Entities {
  export namespace bar {
    export namespace PUT {
      export interface basic {
-       path: '/foo',
+       path: /foo,
        req: {
          headers: {
          }
@@ -82,7 +81,7 @@ export namespace Entities {
    }
    export namespace GET {
      export interface basic {
-       path: '/foo',
+       path: /foo,
        req: {
          headers: {
          }

@@ -1,7 +1,5 @@
 'use strict';
 
-import {RouteBaseMulti} from './main';
-
 export namespace Entities {
   
   export namespace Foo {
@@ -9,8 +7,13 @@ export namespace Entities {
     export namespace GET {
     
       export  namespace Basic {
+
+        export interface Roop {
+
+        }
       
         export interface Req {
+
           headers: {
             zoomHeader: 5
           },

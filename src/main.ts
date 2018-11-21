@@ -12,6 +12,7 @@ export {symbols};
 import * as defaults from './defaults';
 import * as util from "util";
 import * as assert from "assert";
+import {LangMap} from "./utils";
 
 export {defaults};
 
@@ -40,8 +41,12 @@ export enum Langs {
   JAVA = 'java'
 }
 
+export const joinMessages = (...args: string[]) => {
+  return args.join(' ');
+};
 
-export const typeLink = function (...args: any[]) {
+
+export const setLink = function (...args: any[]) : {elab: TypeElaboration} {
 
   const typeString = args.pop();
   assert.equal(typeof  typeString, 'string', 'type link must be a string');
@@ -66,33 +71,40 @@ export const typeLink = function (...args: any[]) {
 interface TypeElaboration {
   [key: string]: any,
 
-  type: string,
+  type: Partial<LangMap>,
   optional?: boolean,
   required?: boolean,
+  link?: string
   value?: string,
   fromField?: string,
   toField?: string
 }
 
-export const setType = function (...args: any[]) {
+export const setType = function (...args: any[]) : {elab: TypeElaboration} {
 
   const v = <TypeElaboration>args.pop();
 
   assert(v && typeof v === 'object', 'Argument must be a non-array object.');
-  assert(Array.isArray(v), 'Argument must be a non-array object.');
-
+  assert(!Array.isArray(v), 'Argument must be a non-array object.');
 
   if ((v as any)[symbols.typeMap]) {
     return simpleType.apply(null, args);
   }
 
+  if(v.type){
+    assert.equal(
+      (v.type as any)[symbols.typeMap],
+      true,
+      'Object must have a property "type" which points to an object with a typeMap/Symbol property.'
+    );
+  }
 
-  assert.equal(
-    (v.type as any)[symbols.typeMap],
-    true,
-    'Object must have a property "type" which points to an object with a typeMap/Symbol property.'
-  );
+  if(v.link){
+    assert.equal(typeof v.link, 'string', '"link" property must be a string.');
+  }
 
+  assert(v.link || v.type, 'You must provide a "link" or "type" - you provided neither.');
+  assert(!(v.link && v.type), 'You must choose either a "link" or "type" to use - you provided both.');
 
   if ('value' in v) {
     assert.equal(typeof v.value, 'string', '"value" field must be a string type.');
@@ -130,10 +142,6 @@ export const simpleType = function (...args: any[]) {
     }
   }
 
-  if (arguments.length > 1) {
-    throw new Error(simpleType.name + ' requires 1 argument only.');
-  }
-
   const ret = <any>{
     [symbols.typeMap]: true,
     map: Object.assign({}, v)
@@ -152,190 +160,5 @@ export const r2gSmokeTest = function () {
   return true;
 };
 
-export interface Headers {
-  [key: string]: string
-}
-
-export interface Request {
-  headers?: Headers;
-  body?: any;
-  queryParams?: {
-    [key: string]: string
-  };
-  parsedQueryParams?: {
-    [key: string]: any
-  }
-}
-
-export interface Response {
-  headers?: Headers;
-  body?: any;
-}
-
-export interface RouteBase {
-  req: Request,
-  res: Response,
-}
-
-export interface RouteBaseMulti {
-  req: Request,
-  res: Response,
-}
-
-export interface RouteInfo {
-  path: string,
-  example: {
-    res: Response,
-    req: Request
-  }
-}
-
-export interface RouteMap {
-  [key: string]: RouteInfo
-}
-
-export class Entity {
-
-  name: string;
-  routes: RouteMap;
-
-  constructor(name: string, routes?: RouteMap) {
-    this.name = name;
-    this.routes = routes || {};
-  }
-
-  addRoute(v: RouteInfo): this {
-
-    if (this.routes[v.path]) {
-      throw new Error(
-        joinMessages(
-          'OreDoc entity with name', chalk.bold(this.name), 'already has a  route with path:', chalk.bold(v.path)
-        )
-      );
-    }
-
-    this.routes[v.path] = v;
-    return this;
-  }
-
-  attachTo(d: DocGen): this {
-    d.addEntity(this);
-    return this;
-  }
-}
-
-export interface Info {
-  miscRoutes: {
-    [key: string]: RouteInfo
-  },
-  entities: {
-    [key: string]: Entity
-  }
-}
-
-export const joinMessages = (...args: string[]) => {
-  return args.join(' ');
-};
-
-
-export class RouteMulti<Req extends Request, Res extends Response> {
-
-  req: Req;
-  res: Res;
-
-  constructor(req: Req, res: Res) {
-
-    this.req = (<any>Object).assign({
-      headers: {},
-      queryParams: {},
-      parsedQueryParams: {},
-      body: {}
-    }, req);
-
-    this.res = (<any>Object).assign({
-      headers: {},
-      body: {}
-    }, res);
-
-  }
-}
-
-
-export class DocGen {
-
-  filePath: '';
-  info: Info;
-
-  constructor() {
-    this.info = {
-      entities: {},
-      miscRoutes: {}
-    };
-  }
-
-
-  createEntity(name: string, routes?: RouteMap): Entity {
-    return new Entity(
-      name,
-      routes
-    )
-  }
-
-  createAndAddEntity(name: string, routes?: RouteMap): Entity {
-
-    if (this.info.entities[name]) {
-      throw new Error(joinMessages('OreDoc already has an entity with name:', name));
-    }
-
-    const entity = this.createEntity(name, routes);
-    this.info.entities[entity.name] = entity;
-    return entity;
-  }
-
-  addEntity(v: Entity): this {
-
-    if (this.info.entities[v.name]) {
-      throw new Error(joinMessages('OreDoc already has an entity with name:', v.name));
-    }
-
-    this.info.entities[v.name] = v;
-    return this;
-  }
-
-  addMiscRoute(v: RouteInfo): this {
-
-    if (this.info.miscRoutes[v.path]) {
-      throw new Error(joinMessages('OreDoc already has a misc route with path:', v.path));
-    }
-
-    this.info.miscRoutes[v.path] = v;
-    return this;
-  }
-
-  addRoute(entity: string, v: RouteInfo): this {
-
-    return this;
-  }
-
-  serialize(): string {
-    return safe.stringify(this.info);
-  }
-
-  serve(): RequestHandler {
-
-    return (req, res, next) => {
-
-      try {
-        res.json(this.info);
-      }
-      catch (err) {
-        log.error(err);
-        next(err);
-      }
-
-    }
-  }
-
-}
 
 

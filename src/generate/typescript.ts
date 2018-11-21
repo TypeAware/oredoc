@@ -2,53 +2,26 @@
 
 import * as path from 'path';
 import * as assert from 'assert';
-import {ts, type, literal, inline, simple, optional} from '../symbols';
-import {defaultBoolean, defaultInt, defaultString, defaultArrayType} from "../defaults";
+import {ts, literal, simple, optional, typeMap, typeOptions} from '../symbols';
+import {defaultBoolean, defaultInt, defaultString, defaultArrayType, defaultObject} from "../defaults";
 import {joinMessages} from '../main';
 import {Lang} from "./shared";
+import * as util from "util";
+import * as symbols from "../symbols";
 
 const conf = new Lang({lang: 'typescript'});
 
 
-const getString = (v: any, isLiteral: boolean) => {
+const getString = (v: any) => {
 
-  if (v === defaultInt) {
-    return (defaultInt as any)[conf.lang];
+  const ret = v[conf.lang];
+
+  if (!ret) {
+    throw new Error(joinMessages(`Map does not contain key: "${conf.lang}"`, util.inspect(v)));
   }
 
-  if (v === defaultString) {
-    return defaultString['typescript'];
-  }
+  return ret;
 
-  if (v === defaultBoolean) {
-    return defaultBoolean['typescript'];
-  }
-
-  if (typeof v === 'boolean') {
-    return isLiteral ? v : 'boolean';
-  }
-
-  if (typeof v === 'string') {
-    if (isLiteral) {
-      return `'${v}'`https://google.github.io/gson/apidocs/com/google/gson/annotations/package-summary.html
-    }
-    if (v === 'string') {
-      return 'string';
-    }
-    if (v === 'boolean') {
-      return 'boolean';
-    }
-    if (v === 'number') {
-      return 'number';
-    }
-
-  }
-
-  if (typeof v === 'number') {
-    return isLiteral ? v : 'number';
-  }
-
-  throw new Error(joinMessages('primitive not recognized:', v, typeof v));
 };
 
 const hasDefault = (v: any) => {
@@ -78,47 +51,77 @@ export const generate = (src: string) => {
     const space = new Array(spaceCount).fill(null).join(' ');
     spaceCount += 2;
 
-    const isLiteral = v[type] !== true;
 
     for (let k of Object.keys(v)) {
 
       const rhs = v[k];
 
-      if (hasDefault(rhs) || !isLiteral || !(v[k] && typeof v[k] === 'object')) {
-        const val = getString(v[k], isLiteral);
+      if (!(rhs && typeof rhs === 'object')) {
+        result.push(space + `${k}: ${rhs},`);
+        continue;
+      }
 
-        if (/[^a-zA-z0-9]/.test(k)) {
-          k = `'${k}'`;
+      if (rhs[typeMap] === true) {
+        {
+          const val = getString(rhs);
+          result.push(space + `${k}: ${val},`);
         }
+        continue;
+      }
 
-        result.push(space + `${k}: ${val},`);
+      if (rhs[typeOptions] === true) {
+        {
+          const elab = rhs.elab;
+
+          if (!elab) {
+            throw new Error('no elab ' + util.inspect(rhs));
+          }
+
+          if (elab.type) {
+            const val = getString(elab);
+            result.push(space + `${k}: ${val},`);
+          }
+          else if (elab.link) {
+            result.push(space + `${k}: ${elab.link},`);
+          }
+          else {
+            throw new Error('no link or type ' + util.inspect(elab));
+          }
+
+        }
         continue;
       }
 
       if (Array.isArray(rhs)) {
         {
 
-          const type = typeof rhs[0];
+          const firstElem = rhs[0];
 
-          if ((<any>rhs)[inline] === true) {
+          if ((<any>rhs)[ts.inline] === true) {
 
-            const firstElem = rhs[0];
-            if (Array.isArray(firstElem)) {
-              result.push(space + `${k}: Array<Array<any>>`);
-            }
-            else if (hasDefault(firstElem)) {
-              result.push(space + `${k}: Array<${getString(firstElem, isLiteral)}>`);
-            }
-            else if (firstElem && typeof firstElem === 'object') {
-              result.push(space + `${k}: Array<{`);
-              loop(firstElem, spaceCount, true);
-              result.push(space + '}>');
-            }
-            else {
-              const literalType = (<any>defaultArrayType)[firstElem]['typescript'];
-              result.push(space + `${k}: Array<${literalType}>`);
-            }
+            throw new Error('ts.inline not yet implemented.');
 
+            // const firstElem = rhs[0];
+            // if (Array.isArray(firstElem)) {
+            //   result.push(space + `${k}: Array<Array<any>>`);
+            // }
+            // else if (hasDefault(firstElem)) {
+            //   result.push(space + `${k}: Array<${getString(firstElem, isLiteral)}>`);
+            // }
+            // else if (firstElem && typeof firstElem === 'object') {
+            //   result.push(space + `${k}: Array<{`);
+            //   loop(firstElem, spaceCount, true);
+            //   result.push(space + '}>');
+            // }
+            // else {
+            //   const literalType = (<any>defaultArrayType)[firstElem]['typescript'];
+            //   result.push(space + `${k}: Array<${literalType}>`);
+            // }
+
+          }
+          else if(firstElem[typeMap] === true){
+            const literalType = (<any>firstElem)['typescript'];
+            result.push(space + `${k}: Array<${literalType}>`);
           }
           else if ((<any>rhs)[literal] === true) {
             const literalType = rhs.reverse().reduce((a, b) => {
@@ -126,8 +129,13 @@ export const generate = (src: string) => {
             });
             result.push(space + `${k}: Array<${literalType}>,`);
           }
-          else {  // (<any>rhs)[simple] === true
-            const literalType = (<any>defaultArrayType)[type]['typescript'];
+          else if ((<any>rhs)[typeMap] === true) {  // (<any>rhs)[simple] === true
+            const literalType = (<any>rhs)['typescript'];
+            result.push(space + `${k}: Array<${literalType}>`);
+          }
+          else {
+            console.error('Creating default object type:', rhs);
+            const literalType = (<any>defaultObject)['typescript'];
             result.push(space + `${k}: Array<${literalType}>`);
           }
         }
