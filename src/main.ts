@@ -51,13 +51,11 @@ export const setLink = function (...args: any[]) : {elab: TypeElaboration} {
   const typeString = args.pop();
   assert.equal(typeof  typeString, 'string', 'type link must be a string');
 
-
   const ret = <any>{
     [symbols.typeLink]: true,
     link: typeString,
     value: null as string
   };
-
 
   for (let s of args) {
     ret[s] = true;

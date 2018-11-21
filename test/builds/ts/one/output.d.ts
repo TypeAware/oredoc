@@ -13,10 +13,10 @@ export namespace Entities {
      }
      export interface basic {
        zoom: DogPigRoop,
-       path: /foo,
+       path: '/foo',
        req: {
          headers: {
-           x-requested-by: foo,
+           x_requested_by: 'foo',
          }
          body: {
            foo: string,
@@ -30,13 +30,13 @@ export namespace Entities {
        }
      }
      export interface tragic {
-       path: /foo,
+       path: '/foo',
        req: {
          headers: {
-           x-requested-by: foo,
+           x_requested_by: 'foo',
          }
          body: {
-           foo: string,
+           foo: 'string',
          }
        }
        res: {
@@ -47,13 +47,13 @@ export namespace Entities {
    }
    export namespace GET {
      export interface miasmic {
-       path: /foo,
+       path: '/foo',
        req: {
          headers: {
-           x-requested-by: foo,
+           x_requested_by: 'foo',
          }
          body: {
-           foo: string,
+           foo: 'string',
          }
        }
        res: {
@@ -66,7 +66,7 @@ export namespace Entities {
  export namespace bar {
    export namespace PUT {
      export interface basic {
-       path: /foo,
+       path: '/foo',
        req: {
          headers: {
          }
@@ -81,7 +81,7 @@ export namespace Entities {
    }
    export namespace GET {
      export interface basic {
-       path: /foo,
+       path: '/foo',
        req: {
          headers: {
          }

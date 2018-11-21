@@ -52,7 +52,7 @@ exports.entities = {
         path: '/foo',
         req: set(go.struct, {
           headers: {
-            'x-requested-by': 'foo'
+            'x_requested_by': 'foo'
           },
           body: set(type, {
             // foo: 'string',
@@ -72,7 +72,7 @@ exports.entities = {
         path: '/foo',
         req: set(go.struct,{
           headers: {
-            'x-requested-by': 'foo'
+            'x_requested_by': 'foo'
           },
           body: set(type,{
             foo: 'string'
@@ -89,7 +89,7 @@ exports.entities = {
         path: '/foo',
         req: set(go.struct,{
           headers: {
-            'x-requested-by': 'foo'
+            'x_requested_by': 'foo'
           },
           body: set(type,{
             foo: 'string',

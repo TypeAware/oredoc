@@ -2,15 +2,14 @@
 
 import * as path from 'path';
 import * as assert from 'assert';
-import {ts, literal, simple, optional, typeMap, typeOptions} from '../symbols';
+import {ts, literal, simple, optional, typeMap, typeOptions, typeLink} from '../symbols';
 import {defaultBoolean, defaultInt, defaultString, defaultArrayType, defaultObject} from "../defaults";
 import {joinMessages} from '../main';
 import {Lang} from "./shared";
 import * as util from "util";
-import * as symbols from "../symbols";
+
 
 const conf = new Lang({lang: 'typescript'});
-
 
 const getString = (v: any) => {
 
@@ -21,16 +20,8 @@ const getString = (v: any) => {
   }
 
   return ret;
-
 };
 
-const hasDefault = (v: any) => {
-  return [
-    defaultBoolean,
-    defaultInt,
-    defaultString
-  ].includes(v);
-};
 
 export const generate = (src: string) => {
 
@@ -55,9 +46,19 @@ export const generate = (src: string) => {
     for (let k of Object.keys(v)) {
 
       const rhs = v[k];
+      const type = typeof rhs;
 
       if (!(rhs && typeof rhs === 'object')) {
-        result.push(space + `${k}: ${rhs},`);
+
+        result.push(space + `${k}: '${rhs}',`);
+        continue;
+      }
+
+      if(rhs[typeLink] === true){
+        {
+          const val = rhs.link;
+          result.push(space + `${k}: ${val},`);
+        }
         continue;
       }
 

@@ -46,6 +46,13 @@ export const defaultObject = setTypeMap({
   'swift': 'Object',
 });
 
+export const defaultMap = setTypeMap({
+  'golang': 'struct {}',
+  'java': `Map`,
+  'typescript': '{}',
+  'swift': 'Object',
+});
+
 
 export const defaultArrayType = {
   'string': defaultString,
