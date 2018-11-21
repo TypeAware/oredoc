@@ -3,12 +3,28 @@
 export const literal = Symbol('literal');
 export const type = Symbol('type');
 export const inline = Symbol('inline.array');
+
+/*
+
+        zoom: setArray(inline, [
+          {dog: defaultString, pig: defaultBoolean, roop:[{}]}
+        ]),
+        boom: setArray(inline, [defaultString]),
+        toom: setArray(inline, [
+          []
+        ]),
+
+*/
+
 export const simple = Symbol('simple.type.inference');
 export const extend = Symbol('generic.extends.keyword');
 export const imports = Symbol('generic.imports.keyword');
 export const optional = Symbol('generic.optional.field');
 
 export const typeLink = Symbol('generic.type.link');
+
+
+export const typeOptions = Symbol('type.options');
 
 export const typeVal = Symbol('type.value');
 export const typeMap = Symbol('type.map');  // user provides custom object, mapping a language to a type

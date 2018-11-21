@@ -30,7 +30,7 @@ const getString = (v: any, isLiteral: boolean) => {
 
   if (typeof v === 'string') {
     if (isLiteral) {
-      return `'${v}'`
+      return `'${v}'`https://google.github.io/gson/apidocs/com/google/gson/annotations/package-summary.html
     }
     if (v === 'string') {
       return 'string';

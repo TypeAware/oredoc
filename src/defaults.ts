@@ -2,6 +2,7 @@
 
 import * as symbols from './symbols';
 import * as utils from './utils';
+import {setTypeMap} from './utils';
 
 // export enum defaultNumber  {
 //   'golang' = 'float32',
@@ -9,47 +10,44 @@ import * as utils from './utils';
 //   'typescript' = 'number'
 // }
 
-const defaultNumber = {
-  [symbols.typeMap]: true,
+const defaultNumber = setTypeMap({
   'golang': 'float32',
   'java': 'double',
   'typescript': 'number',
   'swift': 'double'
-};
+});
 
-export const defaultInt = {
-  [symbols.typeMap]: true,
+export const defaultInt = setTypeMap({
   'golang': 'int',
   'java': 'int',
   'typescript': 'number',
   'swift': 'int',
-};
+});
 
-export const defaultString = {
-  [symbols.typeMap]: true,
+export const defaultString = setTypeMap({
   'golang': 'string',
   'java': 'String',
-  'typescript': 'string'
-};
+  'typescript': 'string',
+  'swift': 'strAng',
+});
 
-export const defaultBoolean = {
-  [symbols.typeMap]: true,
+export const defaultBoolean = setTypeMap({
   'golang': 'bool',
   'java': 'boolean',
-  'typescript': 'boolean'
-};
+  'typescript': 'boolean',
+  'swift': 'boolean',
+});
 
 
-export const defaultObject = {
-  [symbols.typeMap]: true,
+export const defaultObject = setTypeMap({
   'golang': 'struct {}',
   'java': `Object`,
-  'typescript': '{}'
-};
+  'typescript': '{}',
+  'swift': 'Object',
+});
 
 
 export const defaultArrayType = {
-  [symbols.typeMap]: true,
   'string': defaultString,
   'boolean': defaultBoolean,
   'number': defaultNumber,

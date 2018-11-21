@@ -40,51 +40,74 @@ export enum Langs {
   JAVA = 'java'
 }
 
-interface StringKV {
-  [key: string]: string
-}
-
-interface LangMap {
-  [key: string]: string,
-
-  golang: string,
-  typescript: string,
-  java: string,
-  swift: string
-}
-
 
 export const typeLink = function (...args: any[]) {
+
   const typeString = args.pop();
   assert.equal(typeof  typeString, 'string', 'type link must be a string');
 
-  return {
+
+  const ret = <any>{
     [symbols.typeLink]: true,
     link: typeString,
     value: null as string
+  };
+
+
+  for (let s of args) {
+    ret[s] = true;
   }
+
+  return ret;
+
 };
 
 
+interface TypeElaboration {
+  [key: string]: any,
+
+  type: string,
+  optional?: boolean,
+  required?: boolean,
+  value?: string,
+  fromField?: string,
+  toField?: string
+}
+
 export const setType = function (...args: any[]) {
 
-  const v = args.pop();
+  const v = <TypeElaboration>args.pop();
 
   assert(v && typeof v === 'object', 'Argument must be a non-array object.');
   assert(Array.isArray(v), 'Argument must be a non-array object.');
 
 
-  if (v[symbols.typeMap]) {
+  if ((v as any)[symbols.typeMap]) {
     return simpleType.apply(null, args);
   }
 
 
   assert.equal(
-    v.type[symbols.typeMap],
+    (v.type as any)[symbols.typeMap],
     true,
     'Object must have a property "type" which points to an object with a typeMap/Symbol property.'
-  )
+  );
 
+
+  if ('value' in v) {
+    assert.equal(typeof v.value, 'string', '"value" field must be a string type.');
+  }
+
+  const ret = <any>{
+    [symbols.typeOptions]: true,
+    elab: Object.assign({}, v)
+  };
+
+  for (let s of args) {
+    ret[s] = true;
+  }
+
+  return ret;
 
 };
 
@@ -111,7 +134,6 @@ export const simpleType = function (...args: any[]) {
     throw new Error(simpleType.name + ' requires 1 argument only.');
   }
 
-
   const ret = <any>{
     [symbols.typeMap]: true,
     map: Object.assign({}, v)
@@ -122,34 +144,6 @@ export const simpleType = function (...args: any[]) {
   }
 
   return ret;
-};
-
-export const setArray = (...args: any[]) => {
-  const o = args.pop();
-  if (!Array.isArray(o)) {
-    throw new Error('Final argument must be an array.');
-  }
-  for (let v of args) {
-
-    if (typeof v !== 'symbol') {
-      throw new Error('Value should be a Symbol, but isnt: ' + v);
-    }
-
-    (o as any)[v] = true;
-  }
-  return o;
-};
-
-export const setTypeMap = (v: object) => {
-
-};
-
-export const setTypeString = (t: string, val?: string) => {
-  return {
-    [symbols.type]: true,
-    type: t,
-    val: val
-  }
 };
 
 
