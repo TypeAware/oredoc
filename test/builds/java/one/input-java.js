@@ -25,6 +25,7 @@ const custom = {
 };
 
 
+
 exports.entities = {
 
   foo: {

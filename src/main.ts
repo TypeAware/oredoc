@@ -11,6 +11,7 @@ export {symbols};
 
 import * as defaults from './defaults';
 import * as util from "util";
+import * as assert from "assert";
 
 export {defaults};
 
@@ -40,30 +41,87 @@ export enum Langs {
 }
 
 interface StringKV {
-  [key:string]: string
+  [key: string]: string
 }
 
-export const setType = (v: StringKV) => {
+interface LangMap {
+  [key: string]: string,
 
-  if (!(v && typeof v === 'object')) {
-    throw new Error('Argument must be a non-array object.');
+  golang: string,
+  typescript: string,
+  java: string,
+  swift: string
+}
+
+
+export const typeLink = function (...args: any[]) {
+  const typeString = args.pop();
+  assert.equal(typeof  typeString, 'string', 'type link must be a string');
+
+  return {
+    [symbols.typeLink]: true,
+    link: typeString,
+    value: null as string
+  }
+};
+
+
+export const setType = function (...args: any[]) {
+
+  const v = args.pop();
+
+  assert(v && typeof v === 'object', 'Argument must be a non-array object.');
+  assert(Array.isArray(v), 'Argument must be a non-array object.');
+
+
+  if (v[symbols.typeMap]) {
+    return simpleType.apply(null, args);
   }
 
-  if (Array.isArray(v)) {
-    throw new Error('Argument must be a non-array object.');
-  }
 
-  for(let k of <any>v){
-    if(!Langs[k]){
+  assert.equal(
+    v.type[symbols.typeMap],
+    true,
+    'Object must have a property "type" which points to an object with a typeMap/Symbol property.'
+  )
+
+
+};
+
+
+// symbols: Array<Symbol>, z: Partial<LangMap>
+export const simpleType = function (...args: any[]) {
+
+  const v = args.pop();
+
+  assert(v && typeof v === 'object', 'Argument must be a non-array object.');
+  assert(Array.isArray(v), 'Argument must be a non-array object.');
+
+  for (let k of Object.keys(v)) {
+    if (!(Langs as any)[k]) {
       throw new Error(`The following key is not a recognized language: "${k}" - here are the recognized languages: ${util.inspect(Langs)}`)
     }
-    if(typeof v !== 'string'){
-      throw new Error(`The following object has a key "${k}" that does not point to a string: ` + util.inspect(v));
+    let value = v[k];
+    if (typeof value !== 'string') {
+      throw new Error(`The following object has a key "${k}" that does not point to a string: ` + util.inspect(value));
     }
   }
 
-  (v as any)[symbols.typeMap] = true;
-  return v;
+  if (arguments.length > 1) {
+    throw new Error(simpleType.name + ' requires 1 argument only.');
+  }
+
+
+  const ret = <any>{
+    [symbols.typeMap]: true,
+    map: Object.assign({}, v)
+  };
+
+  for (let s of args) {
+    ret[s] = true;
+  }
+
+  return ret;
 };
 
 export const setArray = (...args: any[]) => {

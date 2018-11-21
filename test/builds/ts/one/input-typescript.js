@@ -5,6 +5,21 @@ const {defaultInt, defaultString, defaultBoolean} = require('../../../../dist/de
 const {set, setArray} = require('../../../../dist/main');
 
 
+exports.lang = {
+
+  'java':{
+    package: '',
+    imports: [
+
+    ],
+    output: {
+      filename: '',
+      folder: ''
+    }
+
+  }
+};
+
 
 exports.entities = {
 
