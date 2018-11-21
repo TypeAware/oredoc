@@ -22,6 +22,9 @@ const getString = (v: any) => {
   return ret;
 };
 
+const getCleanKeyString = (k: string) => {
+  return /[^a-zA-z0-9]/.test(k) ? `'${k}'` : k;
+};
 
 export const generate = (src: string) => {
 
@@ -46,18 +49,36 @@ export const generate = (src: string) => {
     for (let k of Object.keys(v)) {
 
       const rhs = v[k];
+
+      const checkForSymbol = () => {
+        return [typeLink,typeMap,typeOptions].some(v => {
+          return rhs[v] === true;
+        });
+      };
+
+      const cleanKey = getCleanKeyString(k);
+
+      if(!withinInterface){
+        if(cleanKey !== k) {
+          throw new Error('Namespace key must not have special characters.');
+        }
+
+        if(checkForSymbol()){
+          throw new Error('Cannot create a type if you are not within an interface.');
+        }
+      }
+
       const type = typeof rhs;
 
       if (!(rhs && typeof rhs === 'object')) {
-
-        result.push(space + `${k}: '${rhs}',`);
+        result.push(space + `${cleanKey}: '${rhs}',`);
         continue;
       }
 
-      if(rhs[typeLink] === true){
+      if (rhs[typeLink] === true) {
         {
           const val = rhs.link;
-          result.push(space + `${k}: ${val},`);
+          result.push(space + `${cleanKey}: ${val},`);
         }
         continue;
       }
@@ -65,7 +86,7 @@ export const generate = (src: string) => {
       if (rhs[typeMap] === true) {
         {
           const val = getString(rhs);
-          result.push(space + `${k}: ${val},`);
+          result.push(space + `${cleanKey}: ${val},`);
         }
         continue;
       }
@@ -80,10 +101,10 @@ export const generate = (src: string) => {
 
           if (elab.type) {
             const val = getString(elab);
-            result.push(space + `${k}: ${val},`);
+            result.push(space + `${cleanKey}: ${val},`);
           }
           else if (elab.link) {
-            result.push(space + `${k}: ${elab.link},`);
+            result.push(space + `${cleanKey}: ${elab.link},`);
           }
           else {
             throw new Error('no link or type ' + util.inspect(elab));
@@ -120,24 +141,24 @@ export const generate = (src: string) => {
             // }
 
           }
-          else if(firstElem[typeMap] === true){
+          else if (firstElem[typeMap] === true) {
             const literalType = (<any>firstElem)['typescript'];
-            result.push(space + `${k}: Array<${literalType}>`);
+            result.push(space + `${cleanKey}: Array<${literalType}>`);
           }
           else if ((<any>rhs)[literal] === true) {
             const literalType = rhs.reverse().reduce((a, b) => {
               return [b, '<', a, '>'].join('');
             });
-            result.push(space + `${k}: Array<${literalType}>,`);
+            result.push(space + `${cleanKey}: Array<${literalType}>,`);
           }
           else if ((<any>rhs)[typeMap] === true) {  // (<any>rhs)[simple] === true
             const literalType = (<any>rhs)['typescript'];
-            result.push(space + `${k}: Array<${literalType}>`);
+            result.push(space + `${cleanKey}: Array<${literalType}>`);
           }
           else {
             console.error('Creating default object type:', rhs);
             const literalType = (<any>defaultObject)['typescript'];
-            result.push(space + `${k}: Array<${literalType}>`);
+            result.push(space + `${cleanKey}: Array<${literalType}>`);
           }
         }
 
@@ -145,23 +166,24 @@ export const generate = (src: string) => {
       }
 
       if (withinInterface) {
-        result.push(space + `${k}: {`);
+        result.push(space + `${cleanKey}: {`);
         loop(v[k], spaceCount, true);
         result.push(space + '}');
         continue;
       }
 
-      let startInterface = false;
+      const startInterface = rhs[ts.interface] === true;
+      const startClass = rhs[ts.class] === true;
 
-      try {
-        startInterface = v[k][ts.interface] === true;
-      }
-      catch (err) {
-        // ignore
+      if (startClass && startInterface) {
+        throw new Error(joinMessages('Both interface and class were tags on object:', util.inspect(rhs)));
       }
 
       if (startInterface) {
         result.push(space + `export interface ${k} {`);
+      }
+      else if (startClass) {
+
       }
       else {
         result.push(space + `export namespace ${k} {`);

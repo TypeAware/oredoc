@@ -36,7 +36,8 @@ export const go = {
 
 export const ts = {
   inline: Symbol('typescript.inline'), // inline a type
-  interface: Symbol('typescript.interface')
+  interface: Symbol('typescript.interface'),
+  class: Symbol('typescript.class')
 };
 
 

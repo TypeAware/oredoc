@@ -33,30 +33,31 @@ exports.entities = {
 
     PUT: {
 
+      DogPigRoop:  set(ts.interface, {
+        dog: defaultString,
+        pig: defaultBoolean,
+        roop:[{}],
+        stoop: [defaultBoolean]
+      }),
+
       basic: set({
 
-        DogPigRoop:  set( {
-          dog: defaultString,
-          pig: defaultBoolean,
-          roop:[{}],
-          stoop: [defaultBoolean]
-        }),
+        // boom: setArray(inline, [defaultString]),
+        // toom: setArray(inline, [
+        //   []
+        // ]),
+        // faz: setArray(literal,[
+        //   'Entities.Inner.Zoom', 'Froom', 'Star'
+        // ]),
 
-        v: set(ts.interface,{
+        req: set(go.struct, ts.interface, {
+
+          path: '/foo',
+
           zoom: setType({
             link: 'DogPigRoop'
           }),
-          // boom: setArray(inline, [defaultString]),
-          // toom: setArray(inline, [
-          //   []
-          // ]),
-          // faz: setArray(literal,[
-          //   'Entities.Inner.Zoom', 'Froom', 'Star'
-          // ]),
-          path: '/foo',
-        }),
 
-        req: set(go.struct, ts.interface, {
           headers: {
             'x_requested_by': 'foo'
           },
