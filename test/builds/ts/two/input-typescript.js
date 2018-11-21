@@ -1,9 +1,10 @@
 'use strict';
 
-const {type, ts, literal, go, optional} = require('../../../../dist/symbols');
-const {defaultInt, defaultString, defaultBoolean} = require('../../../../dist/defaults');
-const {set, setType, simpleType} = require('../../../../dist/main');
 
+const {ts, literal, go, optional, chld} = require('../../../../dist/symbols');
+const {defaultInt, defaultString, defaultBoolean, defaultArray} = require('../../../../dist/defaults');
+const {set, setType, simpleType} = require('../../../../dist/main');
+const {setTypeMap} = require('../../../../dist/utils');
 
 exports.lang = {
 
@@ -20,6 +21,9 @@ exports.lang = {
   }
 };
 
+const customMap = setTypeMap({
+  'typescript': 'Map<string,string>'
+});
 
 exports.entities = {
 
@@ -52,6 +56,10 @@ exports.entities = {
 
         req: set(go.struct, ts.interface, {
 
+          boom: setType({
+            compound: [defaultArray, customMap, defaultArray, defaultBoolean]
+          }),
+
           path: '/foo',
 
           zoom: setType({
@@ -61,7 +69,7 @@ exports.entities = {
           headers: {
             'x_requested_by': 'foo'
           },
-          body: set(type, {
+          body: set({
             // foo: 'string',
             // bar:'number',
             // zoom: 'boolean'
@@ -79,10 +87,10 @@ exports.entities = {
         path: '/foo',
         req: set(go.struct,{
           headers: {
-            'x_requested_by': 'foo'
+            'x-requested-by': 'foo'
           },
-          body: set(type,{
-            foo: 'string'
+          body: set(chld.literal,{
+            fooLiteral: 'string'
           })
         }),
         res: set(go.struct, {
@@ -98,7 +106,7 @@ exports.entities = {
           headers: {
             'x_requested_by': 'foo'
           },
-          body: set(type,{
+          body: set({
             foo: 'string',
           })
         }),

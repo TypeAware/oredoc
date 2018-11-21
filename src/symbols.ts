@@ -1,5 +1,7 @@
 'use strict';
 
+// TODO: all these symbols should be uppercase first char
+
 export const literal = Symbol('literal');
 export const type = Symbol('type');
 
@@ -45,4 +47,10 @@ export const swift = {
   struct:  Symbol('swift.struct'),
   extension: Symbol('swift.extension'),
   class: Symbol('swift.class')
+};
+
+
+export const chld = {
+  literal: Symbol('children.literal.type')
+
 };

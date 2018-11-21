@@ -10,9 +10,15 @@ export interface LangMap {
   swift: string
 }
 
+const typeMapPrototype = {
+   toString(){
+     return '<symbols.TypeMap>'
+   }
+};
+
 export const setTypeMap = function(v: LangMap) : LangMap{
   (v as any)[symbols.typeMap] = true; // TODO
-  return v;
+  return Object.setPrototypeOf(v, typeMapPrototype);
 };
 
 

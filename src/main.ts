@@ -66,17 +66,22 @@ export const setLink = function (...args: any[]) : {elab: TypeElaboration} {
 };
 
 
-interface TypeElaboration {
+export interface TypeElaboration {
   [key: string]: any,
 
   type: Partial<LangMap>,
   optional?: boolean,
   required?: boolean,
-  link?: string
+  link?: string,
+  compound?: Array<Partial<LangMap>>
   value?: string,
   fromField?: string,
   toField?: string
 }
+
+const checkForMoreThanOne = (list: Array<any>): boolean => {
+   return list.filter(Boolean).length > 1;
+};
 
 export const setType = function (...args: any[]) : {elab: TypeElaboration} {
 
@@ -101,8 +106,12 @@ export const setType = function (...args: any[]) : {elab: TypeElaboration} {
     assert.equal(typeof v.link, 'string', '"link" property must be a string.');
   }
 
-  assert(v.link || v.type, 'You must provide a "link" or "type" - you provided neither.');
-  assert(!(v.link && v.type), 'You must choose either a "link" or "type" to use - you provided both.');
+  assert(v.link || v.type || v.compound, 'You must provide a "link" or "type" - you provided neither.');
+  
+  assert(
+    !checkForMoreThanOne([v.link, v.type, v.compound]),
+    'You must choose either a "link" or "type" to use - you provided both.'
+  );
 
   if ('value' in v) {
     assert.equal(typeof v.value, 'string', '"value" field must be a string type.');

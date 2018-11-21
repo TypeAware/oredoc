@@ -13,6 +13,7 @@ export namespace Entities {
      }
      export namespace basic {
        export interface req {
+         boom: Array<Map<string,string><Array<boolean>>>,
          path: '/foo',
          zoom: DogPigRoop,
          headers: {
@@ -33,10 +34,10 @@ export namespace Entities {
        path: '/foo',
        req: {
          headers: {
-           x_requested_by: 'foo',
+           'x-requested-by': 'foo',
          }
          body: {
-           foo: 'string',
+           fooLiteral: string,
          }
        }
        res: {

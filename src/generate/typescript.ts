@@ -2,23 +2,22 @@
 
 import * as path from 'path';
 import * as assert from 'assert';
-import {ts, literal, simple, optional, typeMap, typeOptions, typeLink} from '../symbols';
+import {ts, literal, simple, optional, typeMap, typeOptions, typeLink, chld} from '../symbols';
 import {defaultBoolean, defaultInt, defaultString, defaultArrayType, defaultObject} from "../defaults";
-import {joinMessages} from '../main';
+import {joinMessages, TypeElaboration} from '../main';
 import {Lang} from "./shared";
 import * as util from "util";
-
 
 const conf = new Lang({lang: 'typescript'});
 
 const getString = (v: any) => {
-
+  
   const ret = v[conf.lang];
-
+  
   if (!ret) {
     throw new Error(joinMessages(`Map does not contain key: "${conf.lang}"`, util.inspect(v)));
   }
-
+  
   return ret;
 };
 
@@ -27,54 +26,75 @@ const getCleanKeyString = (k: string) => {
 };
 
 export const generate = (src: string) => {
-
+  
   const input = require(src);
   assert(input.entities, 'no entities exported from .js file.');
-
+  
   const result: Array<string> = [
     'export namespace Entities {'
   ];
-
-  const loop = function (v: any, spaceCount: number, withinInterface: boolean) {
-
+  
+  const loop = function (v: any, parent: any, spaceCount: number, withinInterface: boolean) {
+    
     if (Array.isArray(v)) {
       console.error('we have an array:', v);
       return result.push('Array<any>')
     }
-
+    
     const space = new Array(spaceCount).fill(null).join(' ');
     spaceCount += 2;
-
-
+    
+    if (parent && parent.fooLiteral) {
+      console.error(v, {parent});
+    }
+    
     for (let k of Object.keys(v)) {
-
+      
       const rhs = v[k];
-
+      
       const checkForSymbol = () => {
-        return [typeLink,typeMap,typeOptions].some(v => {
+        return [typeLink, typeMap, typeOptions].some(v => {
           return rhs[v] === true;
         });
       };
-
+      
       const cleanKey = getCleanKeyString(k);
-
-      if(!withinInterface){
-        if(cleanKey !== k) {
+      
+      if (!withinInterface) {
+        if (cleanKey !== k) {
           throw new Error('Namespace key must not have special characters.');
         }
-
-        if(checkForSymbol()){
+        
+        if (checkForSymbol()) {
           throw new Error('Cannot create a type if you are not within an interface.');
         }
       }
-
+      
       const type = typeof rhs;
-
+      
+      if (v[chld.literal] === true) {
+        
+        if (!(rhs && typeof rhs === 'string')) {
+          throw new Error('Parent has a "chld.literal" tag, but child value is not a string.');
+        }
+        
+        result.push(space + `${cleanKey}: ${rhs},`);
+        continue;
+      }
+      
       if (!(rhs && typeof rhs === 'object')) {
         result.push(space + `${cleanKey}: '${rhs}',`);
         continue;
       }
-
+      
+      if (rhs[literal] === true) {
+        {
+          const val = rhs.link;
+          result.push(space + `${cleanKey}: ${val},`);
+        }
+        continue;
+      }
+      
       if (rhs[typeLink] === true) {
         {
           const val = rhs.link;
@@ -82,7 +102,7 @@ export const generate = (src: string) => {
         }
         continue;
       }
-
+      
       if (rhs[typeMap] === true) {
         {
           const val = getString(rhs);
@@ -90,15 +110,15 @@ export const generate = (src: string) => {
         }
         continue;
       }
-
+      
       if (rhs[typeOptions] === true) {
         {
-          const elab = rhs.elab;
-
+          const elab = <TypeElaboration>rhs.elab;
+          
           if (!elab) {
-            throw new Error('no elab ' + util.inspect(rhs));
+            throw new Error(joinMessages('Missing "elab" property:', util.inspect(rhs)));
           }
-
+          
           if (elab.type) {
             const val = getString(elab);
             result.push(space + `${cleanKey}: ${val},`);
@@ -106,23 +126,33 @@ export const generate = (src: string) => {
           else if (elab.link) {
             result.push(space + `${cleanKey}: ${elab.link},`);
           }
+          else if (elab.compound){
+            const literalType = elab.compound.reduceRight((a, b) => {
+              const outer = b[conf.lang];
+              if(a === ''){
+                return outer;
+              }
+              return [outer, '<', a, '>'].join('');
+            },'');
+            result.push(space + `${cleanKey}: ${literalType},`);
+          }
           else {
             throw new Error('no link or type ' + util.inspect(elab));
           }
-
+          
         }
         continue;
       }
-
+      
       if (Array.isArray(rhs)) {
         {
-
+          
           const firstElem = rhs[0];
-
+          
           if ((<any>rhs)[ts.inline] === true) {
-
+            
             throw new Error('ts.inline not yet implemented.');
-
+            
             // const firstElem = rhs[0];
             // if (Array.isArray(firstElem)) {
             //   result.push(space + `${k}: Array<Array<any>>`);
@@ -139,7 +169,7 @@ export const generate = (src: string) => {
             //   const literalType = (<any>defaultArrayType)[firstElem]['typescript'];
             //   result.push(space + `${k}: Array<${literalType}>`);
             // }
-
+            
           }
           else if (firstElem[typeMap] === true) {
             const literalType = (<any>firstElem)['typescript'];
@@ -161,44 +191,44 @@ export const generate = (src: string) => {
             result.push(space + `${cleanKey}: Array<${literalType}>`);
           }
         }
-
+        
         continue;
       }
-
+      
       if (withinInterface) {
         result.push(space + `${cleanKey}: {`);
-        loop(v[k], spaceCount, true);
+        loop(v[k], v, spaceCount, true);
         result.push(space + '}');
         continue;
       }
-
+      
       const startInterface = rhs[ts.interface] === true;
       const startClass = rhs[ts.class] === true;
-
+      
       if (startClass && startInterface) {
         throw new Error(joinMessages('Both interface and class were tags on object:', util.inspect(rhs)));
       }
-
+      
       if (startInterface) {
         result.push(space + `export interface ${k} {`);
       }
       else if (startClass) {
-
+        result.push(space + `export class ${k} {`);
       }
       else {
         result.push(space + `export namespace ${k} {`);
       }
-
-      loop(v[k], spaceCount, startInterface);
+      
+      loop(v[k], v, spaceCount, startInterface);
       result.push(space + '}');
-
+      
     }
-
+    
   };
-
-  loop(input.entities, 2, false);
+  
+  loop(input.entities, null, 2, false);
   console.log(result.join('\n') + '\n}')
-
+  
 };
 
 const f = process.env.input_file;

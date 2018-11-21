@@ -54,6 +54,13 @@ export const defaultMap = setTypeMap({
 });
 
 
+export const defaultArray = setTypeMap({
+  'golang': '[]',
+  'java': `List`,
+  'typescript': 'Array',
+  'swift': 'DunnoXXX',
+});
+
 export const defaultArrayType = {
   'string': defaultString,
   'boolean': defaultBoolean,
