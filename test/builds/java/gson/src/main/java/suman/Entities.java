@@ -13,7 +13,8 @@ public class Entities {
            String foo = "bar";
            int bar = 5;
            boolean zoom = false;
-           Entities.foo.PUT.basic.res.Headers h;
+           req h;
+//           Entities.foo.PUT.basic.res.Headers h;
          }
        }
        public static class res {

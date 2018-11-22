@@ -13,7 +13,7 @@ class JsonObject extends foo.PUT.basic.req.body {
     Nested nested;
     Map m;
     ArrayList<String> list = new ArrayList<String>();
-    public JsonObject(Nested n, String s, foo.PUT.basic.res.Headers h){
+    public JsonObject(Nested n, String s, foo.PUT.basic.req h){
         this.nested = n;
         this.stew = s;
         this.h = h;
@@ -33,7 +33,7 @@ public class App {
 
         Gson gson = new Gson();
         Nested n = new Nested();
-        foo.PUT.basic.res.Headers h = new foo.PUT.basic.res.Headers();
+        foo.PUT.basic.req h = new foo.PUT.basic.req();
         JsonObject obj = new JsonObject(n, "dog", h);
         String json = gson.toJson(obj);
         out.println(json);

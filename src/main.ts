@@ -84,6 +84,27 @@ const checkForMoreThanOne = (list: Array<any>): boolean => {
    return list.filter(Boolean).length > 1;
 };
 
+const validateTypeMap = function(v: Partial<LangMap>): Partial<LangMap> {
+  
+  if (!(v as any)[symbols.typeMap]) {
+    throw new Error(joinMessages('You must pass an type-mapped object to:', simpleType.name));
+  }
+  
+  assert(v && typeof v === 'object', 'Argument must be a non-array object.');
+  assert(Array.isArray(v), 'Argument must be a non-array object.');
+  
+  for (let k of Object.keys(v)) {
+    if (!(Langs as any)[k]) {
+      throw new Error(`The following key is not a recognized language: "${k}" - here are the recognized languages: ${util.inspect(Langs)}`)
+    }
+    let value = v[k];
+    if (typeof value !== 'string') {
+      throw new Error(`The following object has a key "${k}" that does not point to a string: ` + util.inspect(value));
+    }
+  }
+  return v;
+};
+
 export const setType = function (...args: any[]) : {elab: TypeElaboration} {
 
   const v = <TypeElaboration>args.pop();
@@ -101,6 +122,7 @@ export const setType = function (...args: any[]) : {elab: TypeElaboration} {
       true,
       'Object must have a property "type" which points to an object with a typeMap/Symbol property.'
     );
+    validateTypeMap(v.type);
   }
 
   if(v.link){
@@ -139,23 +161,10 @@ export const setType = function (...args: any[]) : {elab: TypeElaboration} {
 // symbols: Array<Symbol>, z: Partial<LangMap>
 export const simpleType = function (...args: any[]) {
 
-  const v = args.pop();
-
-  assert(v && typeof v === 'object', 'Argument must be a non-array object.');
-  assert(Array.isArray(v), 'Argument must be a non-array object.');
-
-  for (let k of Object.keys(v)) {
-    if (!(Langs as any)[k]) {
-      throw new Error(`The following key is not a recognized language: "${k}" - here are the recognized languages: ${util.inspect(Langs)}`)
-    }
-    let value = v[k];
-    if (typeof value !== 'string') {
-      throw new Error(`The following object has a key "${k}" that does not point to a string: ` + util.inspect(value));
-    }
-  }
-
+  const v = validateTypeMap(args.pop());
+  
   const ret = <any>{
-    [symbols.typeMap]: true,
+    [symbols.SimpleTypeMap]: true,
     map: Object.assign({}, v)
   };
 

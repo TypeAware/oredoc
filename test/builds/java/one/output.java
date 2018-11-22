@@ -1,79 +1,70 @@
-public class output {
+public class Entities {
  public static class foo {
    public static class PUT {
-     public static interface basic {
-       String path = "/foo";
+     public static class basic {
+       String path;
        public static class req {
-         public static class headers {
-           String x_requested_by = "foo";
-         }
+         Map<String,String> headers;
          public static class body {
-           String foo = "bar";
-           int bar = 5;
-           boolean zoom = false;
+           String foo;
+           int bar;
+           boolean zoom;
          }
        }
        public static class res {
-         public static class headers {
-         }
+         Map<String,String> headers;
        }
      }
-     public static interface tragic {
-       String path = "/foo";
+     public static class tragic {
+       String path;
        public static class req {
-         public static class headers {
-           String x_requested_by = "foo";
-         }
+         Map<String,String> headers;
          public static class body {
+           tragic.req vv;
+           req ggg;
+           tragic.req zzz;
            String foo;
          }
        }
        public static class res {
-         public static class headers {
-         }
+         Map<String,String> headers;
        }
      }
    }
    public static class GET {
-     public static interface miasmic {
-       String path = "/foo";
+     public static class miasmic {
+       String path;
        public static class req {
-         public static class headers {
-           String x_requested_by = "foo";
-         }
+         Map<String,String> headers;
          public static class body {
            String foo;
          }
        }
        public static class res {
-         public static class headers {
-         }
+         Map<String,String> headers;
        }
      }
    }
  }
  public static class bar {
    public static class PUT {
-     public static interface basic {
-       String path = "/foo";
+     public static class basic {
+       String path;
        public static class req {
-         public static class headers {
-         }
+         Map<String,String> headers;
          public static class body {
          }
        }
        public static class res {
-         public static class headers {
-         }
+         Map<String,String> headers;
        }
      }
    }
    public static class GET {
-     public static interface basic {
-       String path = "/foo";
+     public static class basic {
+       String path;
        public static class req {
-         public static class headers {
-         }
+         Map<String,String> headers;
          public static class body {
          }
        }

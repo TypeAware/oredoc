@@ -80,10 +80,9 @@ export const generate = (src: string) => {
   ];
   
   const loop = function (v: any, parent: any, spaceCount: number, withinInterface: boolean) {
-    
+  
     if (Array.isArray(v)) {
-      console.error('we have an array:', v);
-      return result.push('Array<any>')
+      throw new Error('Unexpected array object.');
     }
     
     const space = new Array(spaceCount).fill(null).join(' ');
@@ -94,6 +93,7 @@ export const generate = (src: string) => {
       const rhs = v[k];
       
       if (rhs && typeof rhs === 'object') {
+        rhs[symbols.Parent] = v;
         rhs[symbols.NamespaceName] = k;
       }
       

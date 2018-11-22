@@ -40,8 +40,6 @@ entities.Inner = {
   Zoom: set(ts.interface, {})
 };
 
-global.entities = entities;
-
 entities.foo = {
 
   PUT: {

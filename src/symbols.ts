@@ -21,6 +21,7 @@ export const simple = Symbol('simple.type.inference');
 export const extend = Symbol('generic.extends.keyword');
 export const imports = Symbol('generic.imports.keyword');
 export const optional = Symbol('generic.optional.field');
+export const NSRename = Symbol('ns.rename');
 
 export const typeLink = Symbol('generic.type.link');
 export const LinkfnVal = Symbol('linkfn.value');
@@ -29,8 +30,10 @@ export const NamespaceName = Symbol('NamespaceName');
 
 export const typeOptions = Symbol('type.options');
 
+export const Parent = Symbol('parent.key'); // prop that points to parent
 export const typeVal = Symbol('type.value');
 export const typeMap = Symbol('type.map');  // user provides custom object, mapping a language to a type
+export const SimpleTypeMap = Symbol('simple.type.map');
 
 export const go = {
   struct: Symbol('golang.struct'),
@@ -44,6 +47,10 @@ export const ts = {
   class: Symbol('typescript.class')
 };
 
+export const java = {
+  interface: Symbol('java.interface'),
+  class: Symbol('java.class')
+};
 
 export const swift = {
   struct:  Symbol('swift.struct'),
