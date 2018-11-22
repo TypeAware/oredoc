@@ -70,7 +70,7 @@ exports.entities = {
           path: '/foo',
 
           room: setType({
-            compound: [defaultArray, 'DogPigRoop'],
+            compound: [defaultArray, 'DogPigRoop<?>',[defaultInt]],
             // link: 'DogPigRoop'
           }),
 
