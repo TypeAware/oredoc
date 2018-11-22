@@ -1,12 +1,34 @@
 
-const s = Symbol('foo');
+const util = require('util');
+const list = ['Map<%s,%s>', ['xxx','Map<%s,%s>', ['string', 'boolean']]];
 
-const v = {};
+// const list = ['Map<%s,%s>', ['string', 'boolean']];
 
-v[s] = true;
+const reduce = function(list){
 
-console.log({v});
+  return list.reduceRight((a,b) => {
 
-const x = Object.assign({}, v);
+    console.log({b,a});
 
-console.log({x});
+    if(Array.isArray(a)){
+
+      const lastElem = a[a.length - 1];
+      const lastElemIsArray = Array.isArray(lastElem);
+
+      if(lastElemIsArray){
+        return util.format(b, ...[a.slice(0,-1), reduce(lastElem)]);
+      }
+
+      return util.format(b, ...a);
+    }
+
+    return util.format(b, a);
+  });
+};
+
+
+console.log(reduce(list));
+
+
+
+

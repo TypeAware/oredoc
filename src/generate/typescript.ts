@@ -25,6 +25,24 @@ const getCleanKeyString = (k: string) => {
   return /[^a-zA-z0-9]/.test(k) ? `'${k}'` : k;
 };
 
+
+const reduce = function(list: Array<any>){
+  return list.slice(1).reduce((a,b) => {
+      
+      if(Array.isArray(b)){
+        const pop = a.pop();
+        const format = util.format(pop,...reduce(b));
+        return a.concat(format);
+      }
+      
+      return (a.push(b), a);
+      
+    },
+    [list[0]]
+  );
+};
+
+
 export const generate = (src: string) => {
   
   const input = require(src);
@@ -128,6 +146,11 @@ export const generate = (src: string) => {
           }
           else if (elab.compound){
             const literalType = elab.compound.reduceRight((a, b) => {
+              
+              if(Array.isArray(b)){
+                return
+              }
+              
               const outer = b[conf.lang];
               if(a === ''){
                 return outer;

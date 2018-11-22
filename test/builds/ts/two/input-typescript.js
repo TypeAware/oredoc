@@ -22,7 +22,7 @@ exports.lang = {
 };
 
 const customMap = setTypeMap({
-  'typescript': 'Map<string,string>'
+  'typescript': 'Map<?,?>'
 });
 
 exports.entities = {
