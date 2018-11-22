@@ -25,35 +25,35 @@ const getCleanKeyString = (k: string) => {
   return /[^a-zA-z0-9]/.test(k) ? `'${k}'` : k;
 };
 
-
 const getStringFromTypeMap = (b: any): string => {
   
   // if(!(b && b[typeMap] === true)){
   //   throw new Error(joinMessages('The following value must have a typeMap symbol prop:', util.inspect(b)));
   // }
   
-  if(typeof  b === 'string'){
+  if (typeof b === 'string') {
     return b;
   }
   
   const str = b[conf.lang];
   
-  if(!(str && typeof str === 'string')){
+  if (!(str && typeof str === 'string')) {
     throw new Error(joinMessages(`The following object must have a "${conf.lang}" prop:`, util.inspect(b)));
   }
   
   return str;
 };
 
-const reduceToFlatList = function(list: Array<any>): Array<string>{
-  return list.slice(1).reduce((a,b) => {
-    
-    console.error({a,b});
+const reduceToFlatList = function (list: Array<any>): Array<string> {
+  return list.slice(1).reduce((a, b) => {
       
-      if(Array.isArray(b)){
+      // console.error({a,b});
+      
+      if (Array.isArray(b)) {
         const pop = getStringFromTypeMap(a.pop());
-        const format = util.format(pop,...reduceToFlatList(b));
-        return a.concat(format);
+        // const format = util.format(pop, ...reduceToFlatList(b));
+        const format = reduceToFlatList(b).reduce((n, t) => n.replace('?', t), pop);
+        return a.concat(format.replace(/\?/g,'any')); // we replace any remaining "?" chars with "any"
       }
       
       const str = getStringFromTypeMap(b);
@@ -67,9 +67,7 @@ const reduceToFlatList = function(list: Array<any>): Array<string>{
   );
 };
 
-
-// const util = require('util');
-// const list = ['Array','Map<%s,%s, %s>', ['xxx','Map<%s,%s>', ['string', 'boolean'], 'number']];
+// const list = ['Array', 'Map<%s,%s, %s>', ['xxx', 'Map<%s,%s>', ['string', 'boolean'], 'number']];
 // console.error(reduceToFlatList(list));
 
 export const generate = (src: string) => {
@@ -173,7 +171,8 @@ export const generate = (src: string) => {
           else if (elab.link) {
             result.push(space + `${cleanKey}: ${elab.link},`);
           }
-          else if (elab.compound){
+          else if (elab.compound) {
+            // console.error({compaound: elab.compound[1]});
             const flatList = reduceToFlatList(elab.compound);
             console.error({flatList});
             const literalType = flatList.reduceRight((a, b) => {

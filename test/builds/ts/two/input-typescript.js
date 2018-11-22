@@ -22,8 +22,14 @@ exports.lang = {
 };
 
 const customMap = setTypeMap({
-  'typescript': 'Map<?,?>'
+  'typescript': 'Map<?,?>' //'Map<%s,%s>'
 });
+
+
+const customArray = setTypeMap({
+  'typescript': 'Array<?>' //'Map<%s,%s>'
+});
+
 
 exports.entities = {
 
@@ -57,11 +63,16 @@ exports.entities = {
         req: set(go.struct, ts.interface, {
 
           boom: setType({
-            compound: [customMap, [defaultArray, defaultBoolean]]
+            compound: [defaultArray, customMap, [ defaultBoolean, customArray,[defaultInt]]]
             // compound: [defaultArray, customMap, [defaultArray, defaultBoolean]]
           }),
 
           path: '/foo',
+
+          room: setType({
+            compound: [defaultArray, 'DogPigRoop'],
+            // link: 'DogPigRoop'
+          }),
 
           zoom: setType({
             link: 'DogPigRoop'

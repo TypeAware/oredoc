@@ -13,8 +13,9 @@ export namespace Entities {
      }
      export namespace basic {
        export interface req {
-         boom: Map<?,?> Array boolean,
+         boom: Array<Map<boolean,Array<number>>>,
          path: '/foo',
+         room: Array<DogPigRoop>,
          zoom: DogPigRoop,
          headers: {
            x_requested_by: 'foo',
