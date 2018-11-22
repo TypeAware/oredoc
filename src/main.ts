@@ -73,6 +73,7 @@ export interface TypeElaboration {
   optional?: boolean,
   required?: boolean,
   link?: string,
+  linkfn?: () => object,
   compound?: Array<Partial<LangMap>>
   value?: string,
   fromField?: string,
@@ -105,11 +106,15 @@ export const setType = function (...args: any[]) : {elab: TypeElaboration} {
   if(v.link){
     assert.equal(typeof v.link, 'string', '"link" property must be a string.');
   }
+  
+  if(v.linkfn){
+    assert.equal(typeof v.linkfn, 'function', '"linkfn" property must be a function.');
+  }
 
-  assert(v.link || v.type || v.compound, 'You must provide a "link" or "type" - you provided neither.');
+  assert(v.link || v.type || v.compound || v.linkfn, 'You must provide a "link" or "type" - you provided neither.');
   
   assert(
-    !checkForMoreThanOne([v.link, v.type, v.compound]),
+    !checkForMoreThanOne([v.link, v.type, v.compound, v.linkfn]),
     'You must choose either a "link" or "type" to use - you provided both.'
   );
 

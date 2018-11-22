@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as assert from 'assert';
 import {ts, literal, simple, optional, typeMap, typeOptions, typeLink, chld} from '../symbols';
 import {defaultBoolean, defaultInt, defaultString, defaultArrayType, defaultObject} from "../defaults";
-import {joinMessages, TypeElaboration} from '../main';
+import {joinMessages, symbols, TypeElaboration} from '../main';
 import {Lang} from "./shared";
 import * as util from "util";
 
@@ -53,7 +53,7 @@ const reduceToFlatList = function (list: Array<any>): Array<string> {
         const pop = getStringFromTypeMap(a.pop());
         // const format = util.format(pop, ...reduceToFlatList(b));
         const format = reduceToFlatList(b).reduce((n, t) => n.replace('?', t), pop);
-        return a.concat(format.replace(/\?/g,'any')); // we replace any remaining "?" chars with "any"
+        return (a.push(format.replace(/\?/g, 'any')), a); // we replace any remaining "?" chars with "any"
       }
       
       const str = getStringFromTypeMap(b);
@@ -89,13 +89,13 @@ export const generate = (src: string) => {
     const space = new Array(spaceCount).fill(null).join(' ');
     spaceCount += 2;
     
-    if (parent && parent.fooLiteral) {
-      console.error(v, {parent});
-    }
-    
     for (let k of Object.keys(v)) {
       
       const rhs = v[k];
+      
+      if (rhs && typeof rhs === 'object') {
+        rhs[symbols.NamespaceName] = k;
+      }
       
       const checkForSymbol = () => {
         return [typeLink, typeMap, typeOptions].some(v => {
@@ -170,6 +170,17 @@ export const generate = (src: string) => {
           }
           else if (elab.link) {
             result.push(space + `${cleanKey}: ${elab.link},`);
+          }
+          else if (elab.linkfn) {
+            const val = elab.linkfn();
+            if (!val) {
+              throw new Error('You tried to link to a namespace in the object tree, but which was undefined.');
+            }
+            const name = (val as any)[symbols.NamespaceName];
+            if (!name) {
+              throw new Error('Cannot refer to a namespace which is not in scope.');
+            }
+            result.push(space + `${cleanKey}: ${String(name)},`);
           }
           else if (elab.compound) {
             // console.error({compaound: elab.compound[1]});

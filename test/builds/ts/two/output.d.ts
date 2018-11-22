@@ -1,8 +1,4 @@
 export namespace Entities {
- export namespace Inner {
-   export interface Zoom {
-   }
- }
  export namespace foo {
    export namespace PUT {
      export interface DogPigRoop {
@@ -15,7 +11,7 @@ export namespace Entities {
        export interface req {
          boom: Array<Map<boolean,Array<number>>>,
          path: '/foo',
-         room: Array<DogPigRoop>,
+         room: DogPigRoop,
          zoom: DogPigRoop,
          headers: {
            x_requested_by: 'foo',
@@ -95,6 +91,10 @@ export namespace Entities {
          }
        }
      }
+   }
+ }
+ export namespace Inner {
+   export interface Zoom {
    }
  }
 }

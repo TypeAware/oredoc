@@ -8,11 +8,9 @@ const {setTypeMap} = require('../../../../dist/utils');
 
 exports.lang = {
 
-  'java':{
+  'java': {
     package: '',
-    imports: [
-
-    ],
+    imports: [],
     output: {
       filename: '',
       folder: ''
@@ -31,133 +29,139 @@ const customArray = setTypeMap({
 });
 
 
-exports.entities = {
+const entities = exports.entities = {
+  foo: null,
+  bar: null,
+  Inner: null
+};
 
-  Inner: {
-    Zoom: set(ts.interface,{
 
+entities.Inner = {
+  Zoom: set(ts.interface, {})
+};
+
+global.entities = entities;
+
+entities.foo = {
+
+  PUT: {
+
+    DogPigRoop: set(ts.interface, {
+      dog: defaultString,
+      pig: defaultBoolean,
+      roop: [{}],
+      stoop: [defaultBoolean]
+    }),
+
+    basic: set({
+
+      // boom: setArray(inline, [defaultString]),
+      // toom: setArray(inline, [
+      //   []
+      // ]),
+      // faz: setArray(literal,[
+      //   'Entities.Inner.Zoom', 'Froom', 'Star'
+      // ]),
+
+      req: set(go.struct, ts.interface, {
+
+        boom: setType({
+          compound: [defaultArray, customMap, [defaultBoolean, customArray, [defaultInt]]]
+          // compound: [defaultArray, customMap, [defaultArray, defaultBoolean]]
+        }),
+
+        path: '/foo',
+
+        room: setType({
+          // compound: [defaultArray, 'DogPigRoop<?,?,?>', [defaultInt, defaultArray]],
+          linkfn: () => entities.foo.PUT.DogPigRoop,
+          // link: 'DogPigRoop'
+        }),
+
+        zoom: setType({
+          link: 'DogPigRoop'
+        }),
+
+        headers: {
+          'x_requested_by': 'foo'
+        },
+        body: set({
+          // foo: 'string',
+          // bar:'number',
+          // zoom: 'boolean'
+          foo: defaultString,
+          bar: defaultInt,
+          zoom: defaultBoolean
+        })
+      }),
+      res: set(go.struct, {
+        headers: {}
+      })
+    }),
+
+    tragic: set(ts.interface, {
+      path: '/foo',
+      req: set(go.struct, {
+        headers: {
+          'x-requested-by': 'foo'
+        },
+        body: set(chld.literal, {
+          fooLiteral: 'string'
+        })
+      }),
+      res: set(go.struct, {
+        headers: {}
+      })
     })
   },
 
-  foo: {
-
-    PUT: {
-
-      DogPigRoop:  set(ts.interface, {
-        dog: defaultString,
-        pig: defaultBoolean,
-        roop:[{}],
-        stoop: [defaultBoolean]
-      }),
-
-      basic: set({
-
-        // boom: setArray(inline, [defaultString]),
-        // toom: setArray(inline, [
-        //   []
-        // ]),
-        // faz: setArray(literal,[
-        //   'Entities.Inner.Zoom', 'Froom', 'Star'
-        // ]),
-
-        req: set(go.struct, ts.interface, {
-
-          boom: setType({
-            compound: [defaultArray, customMap, [ defaultBoolean, customArray,[defaultInt]]]
-            // compound: [defaultArray, customMap, [defaultArray, defaultBoolean]]
-          }),
-
-          path: '/foo',
-
-          room: setType({
-            compound: [defaultArray, 'DogPigRoop<?>',[defaultInt]],
-            // link: 'DogPigRoop'
-          }),
-
-          zoom: setType({
-            link: 'DogPigRoop'
-          }),
-
-          headers: {
-            'x_requested_by': 'foo'
-          },
-          body: set({
-            // foo: 'string',
-            // bar:'number',
-            // zoom: 'boolean'
-            foo: defaultString,
-            bar: defaultInt,
-            zoom: defaultBoolean
-          })
-        }),
-        res: set(go.struct, {
-          headers: {}
+  GET: {
+    miasmic: set(ts.interface, {
+      path: '/foo',
+      req: set(go.struct, {
+        headers: {
+          'x_requested_by': 'foo'
+        },
+        body: set({
+          foo: 'string',
         })
       }),
-
-      tragic: set(ts.interface,{
-        path: '/foo',
-        req: set(go.struct,{
-          headers: {
-            'x-requested-by': 'foo'
-          },
-          body: set(chld.literal,{
-            fooLiteral: 'string'
-          })
-        }),
-        res: set(go.struct, {
-          headers: {}
-        })
+      res: set(go.struct, {
+        headers: {}
       })
-    },
-
-    GET: {
-      miasmic: set(ts.interface,{
-        path: '/foo',
-        req: set(go.struct,{
-          headers: {
-            'x_requested_by': 'foo'
-          },
-          body: set({
-            foo: 'string',
-          })
-        }),
-        res: set(go.struct,{
-          headers: {}
-        })
-      })
-    }
-  },
-
-
-  bar: {
-    PUT: {
-      basic: set(ts.interface,{
-        [optional]:['path'],
-        path: '/foo',
-        req: set(go.struct,{
-          headers: {},
-          body: {}
-        }),
-        res: set(go.struct,{
-          headers: {}
-        })
-      })
-    },
-
-    GET: {
-      basic: set(ts.interface,{
-        path: '/foo',
-        req: set(go.struct,{
-          headers: {},
-          body: {}
-        }),
-        res: set(go.struct,{
-          headers: {}
-        })
-      })
-
-    }
-  },
-
+    })
+  }
 };
+
+
+entities.bar = {
+  PUT: {
+    basic: set(ts.interface, {
+      [optional]: ['path'],
+      path: '/foo',
+      req: set(go.struct, {
+        headers: {},
+        body: {}
+      }),
+      res: set(go.struct, {
+        headers: {}
+      })
+    })
+  },
+
+  GET: {
+    basic: set(ts.interface, {
+      path: '/foo',
+      req: set(go.struct, {
+        headers: {},
+        body: {}
+      }),
+      res: set(go.struct, {
+        headers: {}
+      })
+    })
+
+  }
+};
+
+

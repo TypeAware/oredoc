@@ -23,7 +23,9 @@ export const imports = Symbol('generic.imports.keyword');
 export const optional = Symbol('generic.optional.field');
 
 export const typeLink = Symbol('generic.type.link');
+export const LinkfnVal = Symbol('linkfn.value');
 
+export const NamespaceName = Symbol('NamespaceName');
 
 export const typeOptions = Symbol('type.options');
 
