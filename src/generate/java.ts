@@ -6,8 +6,9 @@ import {joinMessages, TypeElaboration} from '../main';
 import {Lang} from "./shared";
 import * as util from "util";
 import * as symbols from "../symbols";
-import {Entities} from "../../test/builds/ts/two/output";
-import res = Entities.foo.PUT.basic.res;
+
+//////////////////////////////////////////////////////
+
 
 const conf = new Lang({lang: 'java'});
 
@@ -91,7 +92,11 @@ const verifyLink1 = function (list: Array<string>, v: any): boolean {
 };
 
 
-const verifyLink = function (list: Array<string>, v: any): boolean {
+const verifyLink = function (list: Array<string>, v: any, down: boolean, depth: number): boolean {
+  
+  if(depth < 0){
+    return false;
+  }
   
   const prop = list[0];
   const map = <Map<string, any>>v[symbols.NSRename];
@@ -112,10 +117,14 @@ const verifyLink = function (list: Array<string>, v: any): boolean {
   }
   
   if(child){
-    const result = verifyLink(list.slice(1), child);
+    const result = verifyLink(list.slice(1), child, true, depth - 1);
     if(result){
       return true;
     }
+  }
+  
+  if(down){  // we were traversing down the tree, no need to back up
+    return;
   }
   
   const parent = v[symbols.Parent];
@@ -124,7 +133,7 @@ const verifyLink = function (list: Array<string>, v: any): boolean {
     throw new Error('Could not find parent link.');
   }
   
-  return verifyLink(list, parent);
+  return verifyLink(list, parent, false, depth + 1);
 };
 
 
@@ -132,9 +141,11 @@ const verifyLinkWrapper = (originalLink: string, v: any) => {
   const linkage = originalLink.split('.');
   console.error(verifyLinkWrapper.name,'being called with:', linkage);
   try{
-     const r = verifyLink(linkage,v);
+     const r = verifyLink(linkage,v, false, 0);
      if(r !== true){
-       throw 'fark';
+       throw new Error(
+         'Could not verify type-link, the return value of validation routine was not true.'
+       );
      }
   }
   catch(err){

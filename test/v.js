@@ -1,23 +1,25 @@
 
+var Module = require('module');
 
-// const list = ['Map<?,?,?>', ['string', 'Map<?,?>', ['string', 'boolean'], 'Number']];
-
-const list = ['Map<?>', ['Zoom<?,?,?, ?>', ['string', 'Map<?,?>', [], 'Number', 'vom']]];
-
-
-function replaceMatch(arr, i=0){
-  let str = arr[0];
-  return str.replace(/\?/g, () => {
-    let next = arr[1];
-    if (Array.isArray(next[i+1])) {
-      i+=2;
-      return replaceMatch(next.slice(i-2));
-    }
-    else {
-      return next[i++] || 'any';
-    }
-  })
+function requireFromString(src, filename) {
+  var m = new Module(filename, null);
+  m._compile(src, filename);
+  m.loaded = true;
+  m.filename = filename;
+  return m;
 }
 
-console.log(replaceMatch(list));
+console.log(
+  requireFromString(
+    'module.exports = { test: 1}',
+    'uuid'
+  )
+);
 
+const x = require('uuid');
+console.log(x);
+
+console.log(
+  'cache:',
+  require.cache
+);
