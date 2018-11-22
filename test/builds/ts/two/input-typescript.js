@@ -57,7 +57,8 @@ exports.entities = {
         req: set(go.struct, ts.interface, {
 
           boom: setType({
-            compound: [defaultArray, customMap, defaultArray, defaultBoolean]
+            compound: [customMap, [defaultArray, defaultBoolean]]
+            // compound: [defaultArray, customMap, [defaultArray, defaultBoolean]]
           }),
 
           path: '/foo',

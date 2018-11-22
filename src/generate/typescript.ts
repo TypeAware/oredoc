@@ -26,22 +26,51 @@ const getCleanKeyString = (k: string) => {
 };
 
 
-const reduce = function(list: Array<any>){
+const getStringFromTypeMap = (b: any): string => {
+  
+  // if(!(b && b[typeMap] === true)){
+  //   throw new Error(joinMessages('The following value must have a typeMap symbol prop:', util.inspect(b)));
+  // }
+  
+  if(typeof  b === 'string'){
+    return b;
+  }
+  
+  const str = b[conf.lang];
+  
+  if(!(str && typeof str === 'string')){
+    throw new Error(joinMessages(`The following object must have a "${conf.lang}" prop:`, util.inspect(b)));
+  }
+  
+  return str;
+};
+
+const reduceToFlatList = function(list: Array<any>): Array<string>{
   return list.slice(1).reduce((a,b) => {
+    
+    console.error({a,b});
       
       if(Array.isArray(b)){
-        const pop = a.pop();
-        const format = util.format(pop,...reduce(b));
+        const pop = getStringFromTypeMap(a.pop());
+        const format = util.format(pop,...reduceToFlatList(b));
         return a.concat(format);
       }
       
-      return (a.push(b), a);
+      const str = getStringFromTypeMap(b);
+      return (a.push(str), a);
       
     },
-    [list[0]]
+    
+    [
+      getStringFromTypeMap(list[0])
+    ]
   );
 };
 
+
+// const util = require('util');
+// const list = ['Array','Map<%s,%s, %s>', ['xxx','Map<%s,%s>', ['string', 'boolean'], 'number']];
+// console.error(reduceToFlatList(list));
 
 export const generate = (src: string) => {
   
@@ -145,18 +174,11 @@ export const generate = (src: string) => {
             result.push(space + `${cleanKey}: ${elab.link},`);
           }
           else if (elab.compound){
-            const literalType = elab.compound.reduceRight((a, b) => {
-              
-              if(Array.isArray(b)){
-                return
-              }
-              
-              const outer = b[conf.lang];
-              if(a === ''){
-                return outer;
-              }
-              return [outer, '<', a, '>'].join('');
-            },'');
+            const flatList = reduceToFlatList(elab.compound);
+            console.error({flatList});
+            const literalType = flatList.reduceRight((a, b) => {
+              return [b, '<', a, '>'].join('');
+            });
             result.push(space + `${cleanKey}: ${literalType},`);
           }
           else {
