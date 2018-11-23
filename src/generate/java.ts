@@ -9,7 +9,6 @@ import * as symbols from "../symbols";
 
 //////////////////////////////////////////////////////
 
-
 const conf = new Lang({lang: 'java'});
 
 const getString = (v: any) => {
@@ -80,8 +79,8 @@ const verifyLink1 = function (list: Array<string>, v: any): boolean {
     throw new Error('XXX Could not find not find  XXX namespace-map in parent object.');
   }
   
-  if(!map.has(prop)){
-    throw new Error(joinMessages('Could not XXX find the following prop:', prop,'in the map:', util.inspect(map)));
+  if (!map.has(prop)) {
+    throw new Error(joinMessages('Could not XXX find the following prop:', prop, 'in the map:', util.inspect(map)));
   }
   
   if (list.length < 1) {
@@ -91,10 +90,9 @@ const verifyLink1 = function (list: Array<string>, v: any): boolean {
   return verifyLink1(list, parent);
 };
 
-
 const verifyLink = function (list: Array<string>, v: any, down: boolean, depth: number): boolean {
   
-  if(depth < 0){
+  if (depth < 0) {
     return false;
   }
   
@@ -112,18 +110,18 @@ const verifyLink = function (list: Array<string>, v: any, down: boolean, depth: 
   
   const child = map.get(prop);
   
-  if(child && list.length === 1){
+  if (child && list.length === 1) {
     return true;
   }
   
-  if(child){
+  if (child) {
     const result = verifyLink(list.slice(1), child, true, depth - 1);
-    if(result){
+    if (result) {
       return true;
     }
   }
   
-  if(down){  // we were traversing down the tree, no need to back up
+  if (down) {  // we were traversing down the tree, no need to back up
     return;
   }
   
@@ -136,19 +134,18 @@ const verifyLink = function (list: Array<string>, v: any, down: boolean, depth: 
   return verifyLink(list, parent, false, depth + 1);
 };
 
-
 const verifyLinkWrapper = (originalLink: string, v: any) => {
   const linkage = originalLink.split('.');
-  console.error(verifyLinkWrapper.name,'being called with:', linkage);
-  try{
-     const r = verifyLink(linkage,v, false, 0);
-     if(r !== true){
-       throw new Error(
-         'Could not verify type-link, the return value of validation routine was not true.'
-       );
-     }
+  console.error(verifyLinkWrapper.name, 'being called with:', linkage);
+  try {
+    const r = verifyLink(linkage, v, false, 0);
+    if (r !== true) {
+      throw new Error(
+        'Could not verify type-link, the return value of validation routine was not true.'
+      );
+    }
   }
-  catch(err){
+  catch (err) {
     console.error('Could not verify type-link with path:', originalLink);
     throw err;
   }
@@ -224,7 +221,7 @@ export const generate = (src: string) => {
       if (rhs[symbols.typeLink] === true) {
         {
           const val = rhs.link;
-          verifyLinkWrapper(val,rhs);
+          verifyLinkWrapper(val, rhs);
           result.push(space + `${val} ${cleanKey};`);
         }
         continue;
@@ -251,19 +248,25 @@ export const generate = (src: string) => {
             result.push(space + `${val} ${cleanKey};`);
           }
           else if (elab.link) {
-            verifyLinkWrapper(elab.link,v);
+            verifyLinkWrapper(elab.link, v);
             result.push(space + `${elab.link} ${cleanKey};`);
           }
           else if (elab.linkfn) {
-            const val = elab.linkfn();
-            if (!val) {
-              throw new Error('You tried to link to a namespace in the object tree, but which was undefined.');
+            
+            let val, name;
+            try {
+              val = elab.linkfn();
+              assert(val && typeof val === 'object');
+              name = (val as any)[symbols.NamespaceName];
+              assert.equal(typeof name, 'string', 'Could not read namespace symbol from namespace object.')
             }
-            const name = (val as any)[symbols.NamespaceName];
-            if (!name) {
-              throw new Error('Cannot refer to a namespace which is not in scope.');
+            catch (err) {
+              console.error('You tried to link to a namespace in the object tree, but the path was undefined.');
+              console.error('Could not load path with linkfn:', String(elab.linkfn));
+              throw err;
             }
-            verifyLinkWrapper(name,v);
+            
+            verifyLinkWrapper(name, v);
             result.push(space + `${String(name)} ${cleanKey};`);
           }
           else if (elab.compound) {

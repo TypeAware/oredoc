@@ -1,34 +1,22 @@
+'use strict';
 
-const util = require('util');
-const list = ['Map<%s,%s>', ['xxx','Map<%s,%s>', ['string', 'boolean']]];
-
-// const list = ['Map<%s,%s>', ['string', 'boolean']];
-
-const reduce = function(list){
-
-  return list.reduceRight((a,b) => {
-
-    console.log({b,a});
-
-    if(Array.isArray(a)){
-
-      const lastElem = a[a.length - 1];
-      const lastElemIsArray = Array.isArray(lastElem);
-
-      if(lastElemIsArray){
-        return util.format(b, ...[a.slice(0,-1), reduce(lastElem)]);
-      }
-
-      return util.format(b, ...a);
+const foo = {
+  bar: {
+    star: {
+      guitar: 'geetar'
     }
-
-    return util.format(b, a);
-  });
+  }
 };
 
+const stew = {
+  moo: () => foo.bar.star.guitar
+};
 
-console.log(reduce(list));
-
-
-
-
+let guitar;
+try {
+  guitar = stew.moo();
+  console.log(guitar);
+}
+catch (err) {
+  console.error('Could not get value from:', stew.moo.toString());
+}
