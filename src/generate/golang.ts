@@ -94,19 +94,20 @@ const capitalizeFirstChar = (txt: string): string => {
   return txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase();
 };
 
+
+interface EntitiesMap {
+  filePath: string, // fileName is baseName of file path
+  name: string,  // name might be different than baseName
+  packageName: string,
+  children: Array<EntitiesMap>,
+  fileName: string,
+  entity: boolean
+}
+
 export const generate = (root: string, src: string) => {
 
   const input = require(src);
   assert(input.entities, 'no entities exported from .js file.');
-
-  interface EntitiesMap {
-    filePath: string, // fileName is baseName of file path
-    name: string,  // name might be different than baseName
-    packageName: string,
-    children: Array<EntitiesMap>,
-    fileName: string,
-    entity: boolean
-  }
 
   const bn = path.basename(root);
   const ent: EntitiesMap = {
