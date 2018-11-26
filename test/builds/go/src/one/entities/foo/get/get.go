@@ -1,6 +1,7 @@
 package get
 
-import "./miasmic"
+import "./vxxxxp"
+import "./vxxxxp"
 
-type MiasmicReq = miasmic.Req
-type MiasmicRes = miasmic.Res
+type undefined = undefined.undefined
+type undefined = undefined.undefined

@@ -1,9 +1,7 @@
 package put
 
-import "./basic"
-import "./tragic"
+import "./vxxxxp"
+import "./vxxxxp"
 
-type BasicReq = basic.Req
-type BasicRes = basic.Res
-type TragicReq = tragic.Req
-type TragicRes = tragic.Res
+type undefined = undefined.undefined
+type undefined = undefined.undefined

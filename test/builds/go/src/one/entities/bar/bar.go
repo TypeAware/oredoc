@@ -1,9 +1,7 @@
 package bar
 
-import "./put"
-import "./get"
+import "./vxxxxp"
+import "./vxxxxp"
 
-type PutBasicReq = put.BasicReq
-type PutBasicRes = put.BasicRes
-type GetBasicReq = get.BasicReq
-type GetBasicRes = get.BasicRes
+type undefined = undefined.undefined
+type undefined = undefined.undefined

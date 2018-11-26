@@ -7,6 +7,9 @@ import {joinMessages} from '../main';
 import * as async from 'async';
 import {Writable} from "stream";
 import {Lang} from "./shared";
+import * as util from "util";
+import {Entities} from "../../test/builds/ts/two/output";
+import res = Entities.foo.PUT.basic.res;
 
 const conf = new Lang({lang: 'golang'});
 
@@ -14,54 +17,41 @@ const flattenDeep = (v: Array<any>): Array<any> => {
   return v.reduce((acc, val) => Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val), []);
 };
 
-const getString = (v: any, isLiteral: boolean) => {
+const getString = (b: any) => {
   
-  if (typeof v === 'boolean') {
-    return isLiteral ? v : 'boolean';
+  if (typeof b === 'string') {
+    return b;
   }
   
-  if (typeof v === 'string') {
-    if (isLiteral) {
-      return `'${v}'`
-    }
-    if (v === 'string') {
-      return 'string';
-    }
-    if (v === 'boolean') {
-      return 'bool';
-    }
-    if (v === 'number') {
-      return 'int';
-    }
+  const str = b[conf.lang];
+  
+  if (!(str && typeof str === 'string')) {
+    throw new Error(joinMessages(`The following object must have a "${conf.lang}" prop:`, util.inspect(b)));
   }
   
-  if (typeof v === 'number') {
-    return isLiteral ? v : 'number';
-  }
-  
-  throw new Error(joinMessages('primitive not recognized:', v, typeof v));
+  return str;
 };
 
 export type EVCb<T> = (err: any, val?: T) => void;
 
-const handleFile = (v: any, dir: string) => {
+const handleFile = (v: any, dir: string): Array<any> => {
   
   const bn = path.basename(dir).toLowerCase();
   const f = path.resolve(dir, `${bn}.go`);
   const strm = fs.createWriteStream(f);
   strm.write(`package ${bn}\n\n`);
+  const results: Array<any> = [];
   
   const loop = (v: any, spaceCount: number, depth: number) => {
     
     const space = new Array(spaceCount).fill(null).join(' ');
-    const isLiteral = v[type] !== true;
     
     for (let k of Object.keys(v)) {
       
       const rhs = v[k];
       
       if (!(rhs && typeof rhs === 'object')) {
-        const val = getString(rhs, isLiteral);
+        const val = getString(rhs);
         
         if (/[^a-zA-z0-9]/.test(k)) {
           k = `'${k}'`;
@@ -72,6 +62,7 @@ const handleFile = (v: any, dir: string) => {
       }
       
       if (depth === 0) {
+        results.push(k);
         strm.write(space + `type ${k} struct {\n`);
       }
       else {
@@ -87,14 +78,18 @@ const handleFile = (v: any, dir: string) => {
   loop(v, 0, 0);
   strm.end('\n');
   
+  return results;
+  
 };
 
-const capitalizeFirstChar = (txt: string): string => {
+const capFirstChar = (txt: string): string => {
   return txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase();
 };
 
-const handleFolder = (filePath: string, packageName: string, imports: Array<any>, children: Array<any>) => {
+const handleFolder = (dir: string, imports: Array<any>, children: Array<any>) => {
   
+  const packageName = path.basename(dir);
+  const filePath = path.resolve(dir, packageName + '.go');
   const strm = fs.createWriteStream(filePath);
   strm.write(`package ${packageName}\n\n`);
   
@@ -145,7 +140,7 @@ export const generate = (root: string, src: string) => {
     startFile: boolean
   }
   
-  const loop = function (dir: string, v: any, {startFile, spaceCount, startEntity, isInterface}: Opts, cb: EVCb<Array<any>>) {
+  const loop = (dir: string, v: any, parent: any, {startFile, spaceCount, startEntity, isInterface}: Opts, cb: EVCb<Array<any>>) => {
     
     if (Array.isArray(v)) {
       throw new Error('Got unexpected array object.');
@@ -164,11 +159,22 @@ export const generate = (root: string, src: string) => {
           throw new Error('Could not create dir.');
         }
         
+        
         const space = new Array(spaceCount).fill(null).join(' ');
         spaceCount += 2;
-        const isLiteral = v[type] !== true;
         
-        for (let k of Object.keys(v)) {
+        const results: Array<any> = [];
+  
+        if (startFile) {
+    
+          for (let r of handleFile(v, dir)) {
+            results.push(r);
+          }
+    
+          return cb(null, results);
+        }
+        
+        async.eachLimit(Object.keys(v), 5, (k, cb) => {
           
           const rhs = <any>v[k];
           
@@ -190,44 +196,52 @@ export const generate = (root: string, src: string) => {
               throw new Error('We are not within a .go file, so we cannot handle a non-object value yet.')
             }
             
-            const val = getString(rhs, isLiteral);
+            const val = getString(rhs);
             
             if (/[^a-zA-z0-9]/.test(k)) {
               k = `'${k}'`;
             }
             
-            continue;
+            return cb(null);
           }
           
           const startStruct = rhs[go.struct] === true;
           startFile = startFile || rhs[go.file] === true;
           startEntity = startEntity || rhs[go.entity] === true;
           
-          if (!startStruct) {
-            loop(nextDir, rhs, {spaceCount, startFile, isInterface: false, startEntity}, cb);
-            continue;
-          }
           
-          loop(nextDir, rhs, {spaceCount, startFile, isInterface: true, startEntity});
+          loop(nextDir, rhs, v, {spaceCount, startFile, isInterface: false, startEntity}, (err, values) => {
+            
+            if(startEntity){
+              handleFolder(dir, values, values);
+            }
+            
+            for (let v of values) {
+              results.push(v);
+            }
+            
+            cb(err);
+            
+          });
           
-        }
+        }, err => {
+          cb(err, results);
+        });
         
-        cb(null);
       });
     });
     
   };
   
-  loop(root, input, {
-    spaceCount: 2,
-    startFile: false,
-    isInterface: false,
-    startEntity: false
-  }, (err, results) => {
-    
-    console.log({err, results});
-  
-  });
+  loop(root, input, null, {
+      spaceCount: 2,
+      startFile: false,
+      isInterface: false,
+      startEntity: false
+    },
+    (err, results) => {
+      console.log({err, results});
+    });
   
 };
 

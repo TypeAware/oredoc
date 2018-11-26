@@ -1,7 +1,5 @@
 package res
 
-type Headers struct {
+type headers struct {
 }
 
-type Body struct {
-}

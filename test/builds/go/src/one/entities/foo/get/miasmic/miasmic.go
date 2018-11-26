@@ -1,7 +1,5 @@
 package miasmic
 
-import "./req"
-import "./res"
+import "./vxxxxp"
 
-type Req = req.
-type Res = res.
+type undefined = undefined.undefined

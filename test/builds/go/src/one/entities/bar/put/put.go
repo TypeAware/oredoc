@@ -1,6 +1,7 @@
 package put
 
-import "./basic"
+import "./vxxxxp"
+import "./vxxxxp"
 
-type BasicReq = basic.Req
-type BasicRes = basic.Res
+type undefined = undefined.undefined
+type undefined = undefined.undefined
