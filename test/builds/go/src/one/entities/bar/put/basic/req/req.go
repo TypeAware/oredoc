@@ -1,7 +1,7 @@
 package req
 
-type headers struct {
+type Headers struct {
 }
-body struct {
+type Body struct {
 }
 

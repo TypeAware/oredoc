@@ -1,9 +1,9 @@
 package req
 
-type headers struct {
- 'x-requested-by' foo
+type Headers struct {
+ X_requested_by foo
 }
-body struct {
- foo string
+type Body struct {
+ Foo string
 }
 

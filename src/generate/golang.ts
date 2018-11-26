@@ -49,27 +49,28 @@ const handleFile = (v: any, dir: string): Array<any> => {
     for (let k of Object.keys(v)) {
       
       const rhs = v[k];
+      let upperKey = capFirstChar(k);
       
       if (!(rhs && typeof rhs === 'object')) {
         const val = getString(rhs);
         
         if (/[^a-zA-z0-9]/.test(k)) {
-          k = `'${k}'`;
+          throw new Error(joinMessages('Cannot have weird chars in key:', k));
         }
         
-        strm.write(space + `${k} ${val}\n`);
+        strm.write(space + `${upperKey} ${val}\n`);
         continue;
       }
       
       if (depth === 0) {
-        results.push(k);
-        strm.write(space + `type ${k} struct {\n`);
+        results.push([{exportedName: upperKey}]);
+        strm.write(space + `type ${upperKey} struct {\n`);
       }
       else {
-        strm.write(space + `${k} struct {\n`);
+        strm.write(space + `${upperKey} struct {\n`);
       }
       
-      loop(rhs, spaceCount + 2, ++depth);
+      loop(rhs, spaceCount + 2, depth+1);
       strm.write(space + '}\n');
     }
     
@@ -86,7 +87,7 @@ const capFirstChar = (txt: string): string => {
   return txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase();
 };
 
-const handleFolder = (dir: string, imports: Array<any>, children: Array<any>) => {
+const handleFolder = (dir: string, imports: Array<any>, typeAliasesList: Array<any>) => {
   
   const packageName = path.basename(dir);
   const filePath = path.resolve(dir, packageName + '.go');
@@ -94,15 +95,18 @@ const handleFolder = (dir: string, imports: Array<any>, children: Array<any>) =>
   strm.write(`package ${packageName}\n\n`);
   
   for (let v of imports) {
-    strm.write(`import "./${v.packageName || "vxxxxp"}"\n`)
+    strm.write(`import "./${v.packageName}"\n`)
   }
   
   if (imports.length > 0) {
     strm.write('\n');
   }
   
-  for (let v of children) {
-    strm.write(`type ${v.long} = ${v.packageName}.${v.short}\n`);
+  for (let v of typeAliasesList) {
+    const long = v.reduceRight((a:string,b: any) => a + b.exportedName, '');
+    const short = v.slice(0,-1).reduceRight((a:string,b: any) =>  a + b.exportedName,'');
+    const packageName = v[v.length - 1].exportedName.toLowerCase();
+    strm.write(`type ${long} = ${packageName}.${short}\n`);
   }
   
   strm.end();
@@ -174,7 +178,9 @@ export const generate = (root: string, src: string) => {
           return cb(null, results);
         }
         
-        async.eachLimit(Object.keys(v), 5, (k, cb) => {
+        const keys = Object.keys(v);
+        
+        async.eachLimit(keys, 5, (k, cb) => {
           
           const rhs = <any>v[k];
           
@@ -212,12 +218,10 @@ export const generate = (root: string, src: string) => {
           
           loop(nextDir, rhs, v, {spaceCount, startFile, isInterface: false, startEntity}, (err, values) => {
             
-            if(startEntity){
-              handleFolder(dir, values, values);
-            }
-            
             for (let v of values) {
-              results.push(v);
+              results.push(v.concat({
+                exportedName: capFirstChar(k)
+              }));
             }
             
             cb(err);
@@ -225,6 +229,18 @@ export const generate = (root: string, src: string) => {
           });
           
         }, err => {
+  
+          if(startEntity){
+            
+            const imports = keys.map(k => {
+              return {
+                packageName: String(k).toLowerCase()
+              }
+            });
+            
+            handleFolder(dir, imports, results);
+          }
+          
           cb(err, results);
         });
         

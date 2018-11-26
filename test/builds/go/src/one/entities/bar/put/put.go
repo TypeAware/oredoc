@@ -1,7 +1,7 @@
 package put
 
-import "./vxxxxp"
-import "./vxxxxp"
+import "./basic"
 
-type undefined = undefined.undefined
-type undefined = undefined.undefined
+type BasicReqHeaders = basic.ReqHeaders
+type BasicReqBody = basic.ReqBody
+type BasicResHeaders = basic.ResHeaders

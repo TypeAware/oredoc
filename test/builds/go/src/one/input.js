@@ -35,7 +35,7 @@ exports.entities = {
         
         req: set(go.file,{
           headers: {
-            'x-requested-by': 'foo'
+            x_requested_by: 'foo'
           },
           body: set(type, {
             foo: defaultString,
@@ -53,7 +53,7 @@ exports.entities = {
         
         req: set(go.file,{
           headers: {
-            'x-requested-by': 'foo'
+            x_requested_by: 'foo'
           },
           body: set(type,{
             foo: 'string'
@@ -72,7 +72,7 @@ exports.entities = {
         
         req: set(go.file,{
           headers: {
-            'x-requested-by': 'foo'
+            x_requested_by: 'foo'
           },
           body: set(type,{
             foo: 'string',

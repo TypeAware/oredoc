@@ -1,26 +1,26 @@
 package req
 
-type headers struct {
- 'x-requested-by' foo
+type Headers struct {
+ X_requested_by foo
 }
-body struct {
- foo struct {
-   golang string
-   java String
-   typescript string
-   swift strAng
+type Body struct {
+ Foo struct {
+   Golang string
+   Java String
+   Typescript string
+   Swift strAng
  }
- bar struct {
-   golang int
-   java int
-   typescript number
-   swift int
+ Bar struct {
+   Golang int
+   Java int
+   Typescript number
+   Swift int
  }
- zoom struct {
-   golang bool
-   java boolean
-   typescript boolean
-   swift boolean
+ Zoom struct {
+   Golang bool
+   Java boolean
+   Typescript boolean
+   Swift boolean
  }
 }
 

@@ -1,5 +1,8 @@
 package basic
 
-import "./vxxxxp"
+import "./req"
+import "./res"
 
-type undefined = undefined.undefined
+type ReqHeaders = req.Headers
+type ReqBody = req.Body
+type ResHeaders = res.Headers

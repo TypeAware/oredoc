@@ -1,10 +1,14 @@
 package foo
 
-import "./vxxxxp"
-import "./vxxxxp"
+import "./put"
+import "./get"
 
-type undefined = undefined.undefined
-type undefined = undefined.undefined
-ype undefined = undefined.undefined
-type undefined = undefined.undefined
-type undefined = undefined.undefined
+type PutBasicReqHeaders = put.BasicReqHeaders
+type PutBasicReqBody = put.BasicReqBody
+type PutBasicResHeaders = put.BasicResHeaders
+type PutTragicReqHeaders = put.TragicReqHeaders
+type PutTragicReqBody = put.TragicReqBody
+type PutTragicResHeaders = put.TragicResHeaders
+type GetMiasmicReqHeaders = get.MiasmicReqHeaders
+type GetMiasmicReqBody = get.MiasmicReqBody
+type GetMiasmicResHeaders = get.MiasmicResHeaders
