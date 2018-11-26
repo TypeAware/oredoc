@@ -8,6 +8,7 @@ import * as async from 'async';
 import {Writable} from "stream";
 import {Lang} from "./shared";
 
+
 const conf = new Lang({lang: 'golang'});
 
 const flattenDeep = (v: Array<any>): Array<any> => {
@@ -44,10 +45,10 @@ const getString = (v: any, isLiteral: boolean) => {
 
 export type EVCb<T> = (err: any, val?: T) => void;
 
-const handleFile = (v: any, dir: string) => {
+const handleInterface = (v: any, dir: string) => {
   
   const bn = path.basename(dir).toLowerCase();
-  const f = path.resolve(dir, `${bn}.go`);
+  const f = path.resolve(dir, 'types.go');
   const strm = fs.createWriteStream(f);
   strm.write(`package ${bn}\n\n`);
   
@@ -78,7 +79,7 @@ const handleFile = (v: any, dir: string) => {
         strm.write(space + `${k} struct {\n`);
       }
       
-      loop(rhs, spaceCount + 2, ++depth);
+      loop(v[k], spaceCount + 2, ++depth);
       strm.write(space + '}\n');
     }
     
@@ -93,40 +94,38 @@ const capitalizeFirstChar = (txt: string): string => {
   return txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase();
 };
 
-const handleFolder = (filePath: string, packageName: string, imports: Array<any>, children: Array<any>) => {
-  
-  const strm = fs.createWriteStream(filePath);
-  strm.write(`package ${packageName}\n\n`);
-  
-  for (let v of imports) {
-    strm.write(`import "./${v.packageName || "vxxxxp"}"\n`)
-  }
-  
-  if (imports.length > 0) {
-    strm.write('\n');
-  }
-  
-  for (let v of children) {
-    strm.write(`type ${v.long} = ${v.packageName}.${v.short}\n`);
-  }
-  
-  strm.end();
-  
-};
+
+interface EntitiesMap {
+  filePath: string, // fileName is baseName of file path
+  name: string,  // name might be different than baseName
+  packageName: string,
+  children: Array<EntitiesMap>,
+  fileName: string,
+  entity: boolean
+}
 
 export const generate = (root: string, src: string) => {
   
   const input = require(src);
   assert(input.entities, 'no entities exported from .js file.');
   
+  const bn = path.basename(root);
+  const ent: EntitiesMap = {
+    filePath: path.resolve(root, bn + '.go'),
+    name: bn,
+    packageName: bn,
+    fileName: bn + '.go',
+    children: [],
+    entity: false
+  };
+  
   type Task = (cb: EVCb<any>) => void;
   const q = async.queue<Task, any>((task, cb) => task(cb), 8);
   
-  const circularRefCache = new Set<any>();
   
   const to = setTimeout(() => {
     console.error('timed out.');
-  }, 3500);
+  }, 2500);
   
   q.drain = q.error = <any>((err: any) => {
     
@@ -136,32 +135,100 @@ export const generate = (root: string, src: string) => {
       throw err;
     }
     
+    process.nextTick(() => {
+      
+      interface ResultMap {
+        childField: string,
+        allFields: string
+      }
+      
+      interface AllObj {
+        short:string,
+        long: string
+      }
+      
+      const loop = (ent: EntitiesMap): Array<AllObj> => {
+        
+        let strm: Writable = null;
+        let nextVal = capitalizeFirstChar(ent.packageName);
+        
+        if (ent.children.length === 0) {
+          return [{
+            short:'',
+            long:nextVal
+          }];
+        }
+        
+        if (ent.entity) {
+          strm = fs.createWriteStream(ent.filePath);
+          strm.write(`package ${ent.packageName}\n\n`);
+        }
+        
+        if (strm) {
+          
+          for (let v of ent.children) {
+            strm.write(`import "./${v.packageName}"\n`)
+          }
+          
+          strm.write('\n');
+        }
+        
+        
+        let names: Array<AllObj> = [];
+        
+        for (let v of ent.children) {
+          loop(v).forEach(cn => {
+            const name = nextVal + cn.long;
+            console.log({name});
+            names.push({
+              short: cn.long,
+              long: nextVal + cn.long
+            });
+            if (strm) {
+              strm.write(`type ${cn.long} = ${v.packageName}.${cn.short}\n`);
+            }
+          });
+        }
+        
+        if (strm) {
+          strm.end();
+        }
+        
+        return names;
+        
+      };
+      
+      loop(ent);
+      
+    });
   });
   
   interface Opts {
     spaceCount: number,
     isInterface: boolean,
-    startEntity: boolean,
-    startFile: boolean
+    startEntity: boolean
   }
   
-  const loop = function (dir: string, v: any, {startFile, spaceCount, startEntity, isInterface}: Opts, cb: EVCb<Array<any>>) {
+  const loop = function (dir: string, v: any, em: EntitiesMap, {spaceCount, startEntity, isInterface}: Opts) {
     
     if (Array.isArray(v)) {
       throw new Error('Got unexpected array object.');
     }
     
-    q.push(callback => {
+    q.push(cb => {
       
       const k = cp.spawn('bash');
       k.stdin.end(`mkdir -p "${dir}";`);
       
       k.once('exit', code => {
         
-        callback(null);
-        
         if (code > 0) {
           throw new Error('Could not create dir.');
+        }
+        
+        if (isInterface) {
+          cb(null);
+          return handleInterface(v, dir);
         }
         
         const space = new Array(spaceCount).fill(null).join(' ');
@@ -170,26 +237,21 @@ export const generate = (root: string, src: string) => {
         
         for (let k of Object.keys(v)) {
           
-          const rhs = <any>v[k];
+          const rhs = <object>v[k];
+          const fn = String(k).toLowerCase();
+          const nextDir = path.resolve(dir, fn);
+          const folderName = path.basename(nextDir);
           
-          if (circularRefCache.has(rhs)) {
-            throw new Error(
-              'Circular reference detected in the config tree. Circular references not allowed.'
-            );
-          }
-          else {
-            circularRefCache.add(rhs);
-          }
-          
-          const keyname = String(k).toLowerCase();
-          const nextDir = path.resolve(dir, keyname);
+          const ent: EntitiesMap = {
+            name: k,
+            fileName: folderName + '.go',
+            packageName: folderName,
+            filePath: path.resolve(nextDir, folderName + '.go'),
+            children: [],
+            entity: startEntity
+          };
           
           if (!(rhs && typeof rhs === 'object')) {
-            
-            if (!startFile) {
-              throw new Error('We are not within a .go file, so we cannot handle a non-object value yet.')
-            }
-            
             const val = getString(rhs, isLiteral);
             
             if (/[^a-zA-z0-9]/.test(k)) {
@@ -199,16 +261,32 @@ export const generate = (root: string, src: string) => {
             continue;
           }
           
-          const startStruct = rhs[go.struct] === true;
-          startFile = startFile || rhs[go.file] === true;
-          startEntity = startEntity || rhs[go.entity] === true;
+          em.children.push(ent);
+          
+          let startStruct = false; // startEntity = false;
+          
+          try {
+            startStruct = v[k][go.struct] === true;
+          }
+          catch (err) {
+            // ignore
+          }
+          
+          try {
+            startEntity = startEntity || v[k][go.entity] === true;
+          }
+          catch (err) {
+            // ignore
+          }
+          
           
           if (!startStruct) {
-            loop(nextDir, rhs, {spaceCount, startFile, isInterface: false, startEntity}, cb);
+            loop(nextDir, rhs, ent, {spaceCount, isInterface: false, startEntity});
             continue;
           }
           
-          loop(nextDir, rhs, {spaceCount, startFile, isInterface: true, startEntity});
+          
+          loop(nextDir, rhs, ent, {spaceCount, isInterface: true, startEntity});
           
         }
         
@@ -218,18 +296,10 @@ export const generate = (root: string, src: string) => {
     
   };
   
-  loop(root, input, {
-    spaceCount: 2,
-    startFile: false,
-    isInterface: false,
-    startEntity: false
-  }, (err, results) => {
-    
-    console.log({err, results});
-  
-  });
+  loop(root, input, ent, {spaceCount: 2, isInterface: false, startEntity: false});
   
 };
+
 
 const cwd = process.cwd();
 

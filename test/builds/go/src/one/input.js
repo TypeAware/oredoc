@@ -33,17 +33,17 @@ exports.entities = {
 
       basic: set(ts.interface, {
         path: '/foo',
-        req: set(go.struct,{
+        req: set(go.file,{
           headers: {
             'x-requested-by': 'foo'
           },
           body: set(type, {
-            foo: [custom.string, `'bar'`],
-            bar: [custom.int, 5],
-            zoom: [custom.bool, false]
+            foo: defaultString,
+            bar: defaultInt,
+            zoom: defaultBoolean
           })
         }),
-        res: set(go.struct,{
+        res: set(go.file,{
           headers: {
           }
         })
@@ -51,7 +51,7 @@ exports.entities = {
 
       tragic: set(ts.interface,{
         path: '/foo',
-        req: set(go.struct,{
+        req: set(go.file,{
           headers: {
             'x-requested-by': 'foo'
           },
@@ -59,7 +59,7 @@ exports.entities = {
             foo: 'string'
           })
         }),
-        res: set(go.struct,{
+        res: set(go.file,{
           headers: {
 
           }
@@ -70,7 +70,7 @@ exports.entities = {
     GET: {
       miasmic: set(ts.interface,{
         path: '/foo',
-        req: set(go.struct,{
+        req: set(go.file,{
           headers: {
             'x-requested-by': 'foo'
           },
@@ -78,7 +78,7 @@ exports.entities = {
             foo: 'string',
           })
         }),
-        res: set(go.struct,{
+        res: set(go.file,{
           headers: {
           }
         })
@@ -90,7 +90,7 @@ exports.entities = {
     PUT: {
       basic: set(ts.interface,{
         path: '/foo',
-        req: set(go.struct,{
+        req: set(go.file,{
           headers: {
 
           },
@@ -98,7 +98,7 @@ exports.entities = {
 
           }
         }),
-        res: set(go.struct,{
+        res: set(go.file,{
           headers: {
           }
         })
@@ -107,15 +107,14 @@ exports.entities = {
 
     GET: {
       basic: set(ts.interface,{
-        path: '/foo',
-        req: set(go.struct,{
+        req: set(go.file,{
           headers: {
 
           },
           body: {
           }
         }),
-        res: set(go.struct,{
+        res: set(go.file,{
           headers: {
           }
         })
