@@ -4,17 +4,12 @@ export interface ILang {
  lang: string
 }
 
-export class Lang implements  ILang{
+export class Lang {
 
-  lang: string;
+  conf: ILang;
 
   constructor(v: ILang) {
-
-    for(let k of Object.keys(v)){
-      (this as any)[k] = (v as any)[k];
-    }
-
+    this.conf = Object.assign({}, v);
   }
-
-
+  
 }

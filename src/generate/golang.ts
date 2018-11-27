@@ -12,7 +12,7 @@ import {Entities} from "../../test/builds/ts/two/output";
 import res = Entities.foo.PUT.basic.res;
 import * as symbols from "../symbols";
 
-const conf = new Lang({lang: 'golang'});
+const {conf} = new Lang({lang: 'golang'});
 
 const flattenDeep = (v: Array<any>): Array<any> => {
   return v.reduce((acc, val) => Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val), []);
@@ -234,10 +234,10 @@ const getPackageName = (v: any) : string => {
     }
     
     if(name){
-      return `one/${name}`
+      return `oredoc/${name}`  // "one" is the hardcoded oredoc name
     }
     
-    return 'one';
+    return 'oredoc';
 };
 
 const handleFolder = (v: any, dir: string, imports: Array<any>, typeAliasesList: Array<any>) :Array<any> => {
@@ -427,7 +427,7 @@ export const generate = (root: string, src: string) => {
     
   };
   
-  loop(root, input, null, {
+  loop(root, {one:input}, null, {
       spaceCount: 2,
       startFile: false,
       isInterface: false,
@@ -445,5 +445,5 @@ if (path.basename(cwd) !== 'oredoc') {
   throw 'Not in the right cwd.';
 }
 
-const root = path.resolve(cwd, 'test/builds/go/src/one');
-generate(root, path.resolve(cwd, 'test/builds/go/src/one/input.js'));
+const root = path.resolve(cwd, 'test/builds/go/src/oredoc');
+generate(root, path.resolve(cwd, 'test/builds/go/src/oredoc/input.js'));

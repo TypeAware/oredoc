@@ -1,6 +1,6 @@
 package get
 
-import "one/entities/foo/get/miasmic"
+import "oredoc/one/entities/foo/get/miasmic"
 
 type MiasmicReqHeaders = miasmic.ReqHeaders
 type MiasmicReqBody = miasmic.ReqBody

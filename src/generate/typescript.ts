@@ -8,7 +8,7 @@ import {joinMessages, symbols, TypeElaboration} from '../main';
 import {Lang} from "./shared";
 import * as util from "util";
 
-const conf = new Lang({lang: 'typescript'});
+const {conf} = new Lang({lang: 'typescript'});
 
 const getString = (v: any) => {
   

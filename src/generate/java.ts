@@ -9,7 +9,7 @@ import * as symbols from "../symbols";
 
 //////////////////////////////////////////////////////
 
-const conf = new Lang({lang: 'java'});
+const {conf} = new Lang({lang: 'java'});
 
 const getString = (v: any) => {
   const ret = v[conf.lang];
@@ -65,30 +65,6 @@ const reduceToFlatList = function (list: Array<any>): Array<string> {
   );
 };
 
-const verifyLink1 = function (list: Array<string>, v: any): boolean {
-  const prop = list[0];
-  const parent = v[symbols.Parent];
-  
-  if (!parent) {
-    throw new Error('Could not XXX find parent link.');
-  }
-  
-  const map = <Map<string, any>>parent[symbols.NSRename];
-  
-  if (!map) {
-    throw new Error('XXX Could not find not find  XXX namespace-map in parent object.');
-  }
-  
-  if (!map.has(prop)) {
-    throw new Error(joinMessages('Could not XXX find the following prop:', prop, 'in the map:', util.inspect(map)));
-  }
-  
-  if (list.length < 1) {
-    return true;
-  }
-  
-  return verifyLink1(list, parent);
-};
 
 const verifyLink = function (list: Array<string>, v: any, down: boolean, depth: number): boolean {
   
@@ -151,6 +127,8 @@ const verifyLinkWrapper = (originalLink: string, v: any) => {
   }
 };
 
+const uniqueMarker = Symbol('unique.java.marker');
+
 export const generate = (src: string) => {
   
   const input = require(src);
@@ -177,6 +155,14 @@ export const generate = (src: string) => {
       const type = typeof rhs;
       
       if (rhs && typeof rhs === 'object') {
+        
+        if(!rhs[symbols.typeMap] && rhs[uniqueMarker]){
+          throw new Error(
+            'Circular reference detected in the config tree. Circular references not allowed.'
+          );
+        }
+        
+        rhs[uniqueMarker] = true;
         rhs[symbols.Parent] = v;
         rhs[symbols.NamespaceName] = k;
         rn.set(k, rhs);
@@ -306,10 +292,10 @@ export const generate = (src: string) => {
       let startInterface = rhs[symbols.java.interface] === true;
       
       if (startInterface) {
-        result.push(space + `public static interface ${k} {`);
+        result.push(space + `static interface ${k} {`);
       }
       else {
-        result.push(space + `public static class ${k} {`);
+        result.push(space + `static class ${k} {`);
       }
       
       loop(v[k], spaceCount + 2, startInterface);

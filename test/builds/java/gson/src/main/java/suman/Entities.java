@@ -1,15 +1,15 @@
 package suman;
 
 public class Entities {
- public static class foo {
-   public static class PUT {
-     public static interface basic {
+  static class foo {
+    static class PUT {
+      static interface basic {
        String path = "/foo";
-       public static class req {
-         public static class headers {
+        static class req {
+          static class headers {
            String x_requested_by = "foo";
          }
-         public static class body {
+          static class body {
            String foo = "bar";
            int bar = 5;
            boolean zoom = false;
@@ -17,72 +17,72 @@ public class Entities {
 //           Entities.foo.PUT.basic.res.Headers h;
          }
        }
-       public static class res {
-         public static class Headers {
+        static class res {
+          static class Headers {
          }
        }
      }
-     public static interface tragic {
+      static interface tragic {
        String path = "/foo";
-       public static class req {
-         public static class headers {
+        static class req {
+         static class headers {
            String x_requested_by = "foo";
          }
-         public static class body {
+         static class body {
            String foo;
          }
        }
-       public static class res {
-         public static class headers {
+       static class res {
+         static class headers {
          }
        }
      }
    }
-   public static class GET {
-     public static interface miasmic {
+   static class GET {
+     static interface miasmic {
        String path = "/foo";
-       public static class req {
-         public static class headers {
+       static class req {
+         static class headers {
            String x_requested_by = "foo";
          }
-         public static class body {
+         static class body {
            String foo;
          }
        }
-       public static class res {
-         public static class headers {
+       static class res {
+         static class headers {
          }
        }
      }
    }
  }
- public static class bar {
-   public static class PUT {
-     public static interface basic {
+ static class bar {
+   static class PUT {
+     static interface basic {
        String path = "/foo";
-       public static class req {
-         public static class headers {
+       static class req {
+         static class headers {
          }
-         public static class body {
+         static class body {
          }
        }
-       public static class res {
-         public static class headers {
+       static class res {
+         static class headers {
          }
        }
      }
    }
-   public static class GET {
-     public static interface basic {
+   static class GET {
+     static interface basic {
        String path = "/foo";
-       public static class req {
-         public static class headers {
+       static class req {
+         static class headers {
          }
-         public static class body {
+         static class body {
          }
        }
-       public static class res {
-         public static class headers {
+       static class res {
+         static class headers {
          }
        }
      }

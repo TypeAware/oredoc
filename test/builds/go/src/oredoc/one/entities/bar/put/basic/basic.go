@@ -1,7 +1,7 @@
 package basic
 
-import "one/entities/bar/put/basic/req"
-import "one/entities/bar/put/basic/res"
+import "oredoc/one/entities/bar/put/basic/req"
+import "oredoc/one/entities/bar/put/basic/res"
 
 type ReqHeaders = req.Headers
 type ReqBody = req.Body

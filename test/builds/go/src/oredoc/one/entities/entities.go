@@ -1,7 +1,7 @@
 package entities
 
-import "one/entities/foo"
-import "one/entities/bar"
+import "oredoc/one/entities/foo"
+import "oredoc/one/entities/bar"
 
 type FooPutBasicReqHeaders = foo.PutBasicReqHeaders
 type FooPutBasicReqBody = foo.PutBasicReqBody

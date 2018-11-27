@@ -1,6 +1,6 @@
 package put
 
-import "one/entities/bar/put/basic"
+import "oredoc/one/entities/bar/put/basic"
 
 type BasicReqHeaders = basic.ReqHeaders
 type BasicReqBody = basic.ReqBody

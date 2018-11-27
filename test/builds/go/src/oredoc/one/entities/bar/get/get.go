@@ -1,6 +1,6 @@
 package get
 
-import "one/entities/bar/get/basic"
+import "oredoc/one/entities/bar/get/basic"
 
 type BasicReqHeaders = basic.ReqHeaders
 type BasicReqBody = basic.ReqBody

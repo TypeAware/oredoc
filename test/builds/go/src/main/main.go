@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"one/entities/bar"
+	"oredoc/one/entities/bar"
 )
 
 func main(){
@@ -11,3 +11,4 @@ func main(){
 	log.Fatal("Dog",v, "Dang")
 
 }
+

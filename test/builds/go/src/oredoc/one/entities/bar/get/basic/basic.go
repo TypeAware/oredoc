@@ -1,7 +1,7 @@
-package miasmic
+package basic
 
-import "one/entities/foo/get/miasmic/req"
-import "one/entities/foo/get/miasmic/res"
+import "oredoc/one/entities/bar/get/basic/req"
+import "oredoc/one/entities/bar/get/basic/res"
 
 type ReqHeaders = req.Headers
 type ReqBody = req.Body
@@ -9,11 +9,12 @@ type ResHeaders = res.Headers
 
 type Req struct {
  Headers struct {
-   X_requested_by string
  }
 
  Body struct {
-   Foo string
+   Tip string
+   Top int
+   Tap bool
  }
 
 }
