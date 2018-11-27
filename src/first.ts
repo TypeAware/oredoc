@@ -12,9 +12,12 @@ import * as strm from "stream";
 interface Foo {
   bar:{
     star: {
-
+    
     }
   }
 }
 
 type T = Foo['bar']['star'];
+
+const v: T = [];
+

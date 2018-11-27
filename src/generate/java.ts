@@ -45,8 +45,6 @@ const getStringFromTypeMap = (b: any): string => {
 const reduceToFlatList = function (list: Array<any>): Array<string> {
   return list.slice(1).reduce((a, b) => {
       
-      // console.error({a,b});
-      
       if (Array.isArray(b)) {
         const pop = getStringFromTypeMap(a.pop());
         // const format = util.format(pop, ...reduceToFlatList(b));
@@ -58,7 +56,6 @@ const reduceToFlatList = function (list: Array<any>): Array<string> {
       return (a.push(str), a);
       
     },
-    
     [
       getStringFromTypeMap(list[0])
     ]
@@ -195,14 +192,6 @@ export const generate = (src: string) => {
         result.push(space + `${rhs.value} ${cleanKey};`);
         continue;
       }
-      
-      // if (withinInterface) {
-      //   console.error('we are witin interface.');
-      //   result.push(space + `${k}: {`);
-      //   loop(v[k], spaceCount + 2, true);
-      //   result.push(space + '}');
-      //   continue;
-      // }
       
       if (rhs[symbols.typeLink] === true) {
         {
