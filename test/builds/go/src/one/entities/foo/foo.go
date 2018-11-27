@@ -1,7 +1,7 @@
 package foo
 
-import "./put"
-import "./get"
+import "one/entities/foo/put"
+import "one/entities/foo/get"
 
 type PutBasicReqHeaders = put.BasicReqHeaders
 type PutBasicReqBody = put.BasicReqBody

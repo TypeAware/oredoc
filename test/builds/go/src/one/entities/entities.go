@@ -1,7 +1,7 @@
 package entities
 
-import "./foo"
-import "./bar"
+import "one/entities/foo"
+import "one/entities/bar"
 
 type FooPutBasicReqHeaders = foo.PutBasicReqHeaders
 type FooPutBasicReqBody = foo.PutBasicReqBody

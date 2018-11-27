@@ -1,7 +1,7 @@
 package tragic
 
-import "./req"
-import "./res"
+import "one/entities/foo/put/tragic/req"
+import "one/entities/foo/put/tragic/res"
 
 type ReqHeaders = req.Headers
 type ReqBody = req.Body

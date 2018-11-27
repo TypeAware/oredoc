@@ -1,6 +1,6 @@
 package get
 
-import "./basic"
+import "one/entities/bar/get/basic"
 
 type BasicReqHeaders = basic.ReqHeaders
 type BasicReqBody = basic.ReqBody

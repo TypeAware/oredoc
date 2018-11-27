@@ -1,7 +1,7 @@
 package miasmic
 
-import "./req"
-import "./res"
+import "one/entities/foo/get/miasmic/req"
+import "one/entities/foo/get/miasmic/res"
 
 type ReqHeaders = req.Headers
 type ReqBody = req.Body

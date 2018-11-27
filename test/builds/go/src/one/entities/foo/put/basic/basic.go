@@ -1,7 +1,7 @@
 package basic
 
-import "./req"
-import "./res"
+import "one/entities/foo/put/basic/req"
+import "one/entities/foo/put/basic/res"
 
 type ReqHeaders = req.Headers
 type ReqBody = req.Body

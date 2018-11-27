@@ -224,16 +224,39 @@ const capFirstChar = (txt: string): string => {
   return txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase();
 };
 
+const getPackageName = (v: any) : string => {
+ 
+    const parent = v[symbols.Parent];
+    const name = v[symbols.NamespaceName];
+    
+    if(parent && parent[symbols.NamespaceName]){
+      return getPackageName(parent) + '/' + String(name).toLowerCase();
+    }
+    
+    if(name){
+      return `one/${name}`
+    }
+    
+    return 'one';
+};
+
 const handleFolder = (v: any, dir: string, imports: Array<any>, typeAliasesList: Array<any>) :Array<any> => {
   
   const results : Array<any>= [];
-  const packageName = path.basename(dir);
-  const filePath = path.resolve(dir, packageName + '.go');
+  const fileName =  path.basename(dir);
+  const filePath = path.resolve(dir, fileName + '.go');
   const strm = fs.createWriteStream(filePath);
-  strm.write(`package ${packageName}\n\n`);
+  strm.write(`package ${fileName}\n\n`);
+  
+  let packageName = `${fileName}`;
+  
+  if(v[symbols.Parent]){
+    packageName = getPackageName(v[symbols.Parent]) + '/' + fileName
+  }
+  
   
   for (let v of imports) {
-    strm.write(`import "./${v.packageName}"\n`)
+    strm.write(`import "${packageName}/${v.packageName}"\n`)
   }
   
   if (imports.length > 0) {
@@ -307,7 +330,9 @@ export const generate = (root: string, src: string) => {
         }
         
         callback(null);
-        
+  
+        const rn = v[symbols.NSRename] = new Map<string, any>();
+  
         const space = new Array(spaceCount).fill(null).join(' ');
         spaceCount += 2;
         
@@ -336,9 +361,16 @@ export const generate = (root: string, src: string) => {
           else {
             circularRefCache.add(rhs);
           }
-          
+  
           const keyname = String(k).toLowerCase();
           const nextDir = path.resolve(dir, keyname);
+  
+          if (rhs && typeof rhs === 'object') {
+            rhs[symbols.Parent] = v;
+            rhs[symbols.NamespaceName] = k;
+            rn.set(k, rhs);
+          }
+       
           
           if (!(rhs && typeof rhs === 'object')) {
             
