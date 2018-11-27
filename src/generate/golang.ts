@@ -3,13 +3,14 @@ import * as assert from 'assert';
 import * as cp from 'child_process';
 import * as fs from 'fs'
 import {ts, type, literal, go} from '../symbols';
-import {joinMessages} from '../main';
+import {joinMessages, TypeElaboration} from '../main';
 import * as async from 'async';
 import {Writable} from "stream";
 import {Lang} from "./shared";
 import * as util from "util";
 import {Entities} from "../../test/builds/ts/two/output";
 import res = Entities.foo.PUT.basic.res;
+import * as symbols from "../symbols";
 
 const conf = new Lang({lang: 'golang'});
 
@@ -34,6 +35,175 @@ const getString = (b: any) => {
 
 export type EVCb<T> = (err: any, val?: T) => void;
 
+const getStringFromTypeMap = (b: any): string => {
+  
+  // if(!(b && b[typeMap] === true)){
+  //   throw new Error(joinMessages('The following value must have a typeMap symbol prop:', util.inspect(b)));
+  // }
+  
+  if (typeof b === 'string') {
+    return b;
+  }
+  
+  const str = b[conf.lang];
+  
+  if (!(str && typeof str === 'string')) {
+    throw new Error(joinMessages(`The following object must have a "${conf.lang}" prop:`, util.inspect(b)));
+  }
+  
+  return str;
+};
+
+const reduceToFlatList = function (list: Array<any>): Array<string> {
+  return list.slice(1).reduce((a, b) => {
+      
+      // console.error({a,b});
+      
+      if (Array.isArray(b)) {
+        const pop = getStringFromTypeMap(a.pop());
+        // const format = util.format(pop, ...reduceToFlatList(b));
+        const format = reduceToFlatList(b).reduce((n, t) => n.replace('?', t), pop);
+        return (a.push(format.replace(/\?/g, 'any')), a); // we replace any remaining "?" chars with "any"
+      }
+      
+      const str = getStringFromTypeMap(b);
+      return (a.push(str), a);
+      
+    },
+    
+    [
+      getStringFromTypeMap(list[0])
+    ]
+  );
+};
+
+const createFileLooper = (strm: any, results:Array<any>) => {
+  return function loop(v: any, spaceCount: number, depth: number) {
+  
+    const space = new Array(spaceCount).fill(null).join(' ');
+  
+    for (let k of Object.keys(v)) {
+    
+      const rhs = v[k];
+      const upperKey = capFirstChar(k);
+      
+      if(depth === 0){
+        results.push([{exportedName: upperKey}]);
+      }
+    
+      if (!(rhs && typeof rhs === 'object')) {
+  
+        if (!(rhs && typeof rhs === 'string')) {
+          throw new Error('Literal type string assumed, but it is not a string or undefined/empty.');
+        }
+      
+        if (/[^a-zA-z0-9]/.test(k)) {
+          throw new Error(joinMessages('Cannot have weird chars in key:', k));
+        }
+      
+        strm.write(space + `${upperKey} ${rhs}\n`);
+        continue;
+      }
+  
+      if (rhs[symbols.literal] === true) {
+    
+        if (!(rhs.value && typeof rhs.value === 'string')) {
+          throw new Error('Has a "literal" tag, but value prop is undefined or is not a string.');
+        }
+    
+        strm.write(space + `${upperKey} ${rhs.value}\n`);
+        continue;
+      }
+  
+      // if (withinInterface) {
+      //   console.error('we are witin interface.');
+      //   result.push(space + `${k}: {`);
+      //   loop(v[k], spaceCount + 2, true);
+      //   result.push(space + '}');
+      //   continue;
+      // }
+  
+      if (rhs[symbols.typeLink] === true) {
+        {
+          const val = rhs.link;
+          // verifyLinkWrapper(val, rhs);
+          strm.write(space + `${upperKey} ${val}\n`);
+        }
+        continue;
+      }
+  
+      if (rhs[symbols.typeMap] === true) {
+        {
+          const val = getString(rhs);
+          strm.write(space + `${upperKey} ${val}\n`);
+        }
+        continue;
+      }
+  
+      if (rhs[symbols.typeOptions] === true) {
+        {
+          const elab = <TypeElaboration>rhs.elab;
+      
+          if (!elab) {
+            throw new Error(joinMessages('Missing "elab" property:', util.inspect(rhs)));
+          }
+      
+          if (elab.type) {
+            const val = getString(elab);
+            strm.write(space + `${upperKey} ${val}\n`);
+          }
+          else if (elab.link) {
+            strm.write(space + `${upperKey} ${elab.link};`);
+          }
+          else if (elab.linkfn) {
+        
+            let val, name;
+            try {
+              val = elab.linkfn();
+              assert(val && typeof val === 'object');
+              name = (val as any)[symbols.NamespaceName];
+              assert.equal(typeof name, 'string', 'Could not read namespace symbol from namespace object.')
+            }
+            catch (err) {
+              console.error('You tried to link to a namespace in the object tree, but the path was undefined.');
+              console.error('Could not load path with linkfn:', String(elab.linkfn));
+              throw err;
+            }
+        
+            // verifyLinkWrapper(name, v);
+            strm.write(space + `${upperKey} ${String(name)}`);
+          }
+          else if (elab.compound) {
+            // console.error({compaound: elab.compound[1]});
+            const flatList = reduceToFlatList(elab.compound);
+            console.error({flatList});
+            const literalType = flatList.reduceRight((a, b) => {
+              return [b, '<', a, '>'].join('');
+            });
+            strm.write(space + `${upperKey} ${literalType}\n`);
+          }
+          else {
+            throw new Error('no link or type ' + util.inspect(elab));
+          }
+      
+        }
+        continue;
+      }
+    
+      if (depth === 0) {
+        strm.write(space + `type ${upperKey} struct {\n`);
+      }
+      else {
+        strm.write(space + `${upperKey} struct {\n`);
+      }
+    
+      loop(rhs, spaceCount + 2, depth+1);
+      strm.write(space + '}\n\n');
+    }
+  
+  };
+};
+
 const handleFile = (v: any, dir: string): Array<any> => {
   
   const bn = path.basename(dir).toLowerCase();
@@ -41,40 +211,7 @@ const handleFile = (v: any, dir: string): Array<any> => {
   const strm = fs.createWriteStream(f);
   strm.write(`package ${bn}\n\n`);
   const results: Array<any> = [];
-  
-  const loop = (v: any, spaceCount: number, depth: number) => {
-    
-    const space = new Array(spaceCount).fill(null).join(' ');
-    
-    for (let k of Object.keys(v)) {
-      
-      const rhs = v[k];
-      let upperKey = capFirstChar(k);
-      
-      if (!(rhs && typeof rhs === 'object')) {
-        const val = getString(rhs);
-        
-        if (/[^a-zA-z0-9]/.test(k)) {
-          throw new Error(joinMessages('Cannot have weird chars in key:', k));
-        }
-        
-        strm.write(space + `${upperKey} ${val}\n`);
-        continue;
-      }
-      
-      if (depth === 0) {
-        results.push([{exportedName: upperKey}]);
-        strm.write(space + `type ${upperKey} struct {\n`);
-      }
-      else {
-        strm.write(space + `${upperKey} struct {\n`);
-      }
-      
-      loop(rhs, spaceCount + 2, depth+1);
-      strm.write(space + '}\n');
-    }
-    
-  };
+  const loop = createFileLooper(strm, results);
   
   loop(v, 0, 0);
   strm.end('\n');
@@ -87,8 +224,9 @@ const capFirstChar = (txt: string): string => {
   return txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase();
 };
 
-const handleFolder = (dir: string, imports: Array<any>, typeAliasesList: Array<any>) => {
+const handleFolder = (v: any, dir: string, imports: Array<any>, typeAliasesList: Array<any>) :Array<any> => {
   
+  const results : Array<any>= [];
   const packageName = path.basename(dir);
   const filePath = path.resolve(dir, packageName + '.go');
   const strm = fs.createWriteStream(filePath);
@@ -109,7 +247,14 @@ const handleFolder = (dir: string, imports: Array<any>, typeAliasesList: Array<a
     strm.write(`type ${long} = ${packageName}.${short}\n`);
   }
   
+  strm.write('\n');
+  
+  const loop = createFileLooper(strm, results);
+  loop(v, 0, 0);
+  
   strm.end();
+  
+  return results;
   
 };
 
@@ -157,12 +302,11 @@ export const generate = (root: string, src: string) => {
       
       k.once('exit', code => {
         
-        callback(null);
-        
         if (code > 0) {
           throw new Error('Could not create dir.');
         }
         
+        callback(null);
         
         const space = new Array(spaceCount).fill(null).join(' ');
         spaceCount += 2;
@@ -238,7 +382,9 @@ export const generate = (root: string, src: string) => {
               }
             });
             
-            handleFolder(dir, imports, results);
+            for(let r of handleFolder(v,dir, imports, results)){
+              results.push(r);
+            }
           }
           
           cb(err, results);

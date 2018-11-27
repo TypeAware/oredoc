@@ -3,24 +3,27 @@
 const {type, ts, literal, go} = require('../../../../../dist/symbols');
 const {defaultInt, defaultString, defaultBoolean} = require('../../../../../dist/defaults');
 const {set, setArray} = require('../../../../../dist/main');
+const {setTypeMap} = require('../../../../../dist/utils');
 
 const custom = {
 
-  int: {
+  int: setTypeMap({
     golang: 'int8',
     java: 'int',
     typescript: 'number'
-  },
-  string: {
+  }),
+  
+  string: setTypeMap({
     golang: 'string',
     java: 'String',
     typescript: 'string'
-  },
-  bool: {
+  }),
+  
+  bool: setTypeMap({
     golang: 'bool',
     java: 'boolean',
     typescript: 'boolean'
-  }
+  })
 
 };
 
@@ -35,13 +38,13 @@ exports.entities = {
         
         req: set(go.file,{
           headers: {
-            x_requested_by: 'foo'
+            x_requested_by: custom.string
           },
-          body: set(type, {
+          body: {
             foo: defaultString,
             bar: defaultInt,
             zoom: defaultBoolean
-          })
+          }
         }),
         res: set(go.file,{
           headers: {
@@ -53,11 +56,11 @@ exports.entities = {
         
         req: set(go.file,{
           headers: {
-            x_requested_by: 'foo'
+            x_requested_by: custom.string
           },
-          body: set(type,{
-            foo: 'string'
-          })
+          body: {
+            foo: custom.string
+          }
         }),
         res: set(go.file,{
           headers: {
@@ -72,11 +75,11 @@ exports.entities = {
         
         req: set(go.file,{
           headers: {
-            x_requested_by: 'foo'
+            x_requested_by: custom.string
           },
-          body: set(type,{
-            foo: 'string',
-          })
+          body: {
+            foo: custom.string
+          }
         }),
         res: set(go.file,{
           headers: {
@@ -94,7 +97,9 @@ exports.entities = {
 
           },
           body: {
-
+            mip: defaultString,
+            mop: defaultInt,
+            map: defaultBoolean
           }
         }),
         res: set(go.file,{
@@ -111,10 +116,14 @@ exports.entities = {
 
           },
           body: {
+            tip: defaultString,
+            top: defaultInt,
+            tap: defaultBoolean
           }
         }),
         res: set(go.file,{
           headers: {
+          
           }
         })
       })
