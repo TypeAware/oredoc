@@ -1,4 +1,7 @@
-import * as symbols from './symbols';
+'use strict';
+
+
+import {symbols} from './main';
 
 export interface LangMap {
   [key: string]: string | true,

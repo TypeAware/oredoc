@@ -1,6 +1,6 @@
 import * as express from 'express';
 import {RequestHandler} from 'express';
-import {DocGen, Entity, RouteMulti} from '../dist/main';
+import {DocGen, Entity, RouteMulti} from '../dist/original';
 import {Entities} from '../dist/types';
 import Foo = Entities.Foo;
 

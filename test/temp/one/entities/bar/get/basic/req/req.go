@@ -4,9 +4,9 @@ type Headers struct {
 }
 
 type Body struct {
- Mip string
- Mop int
- Map bool
+ Tip string
+ Top int
+ Tap bool
 }
 
 
