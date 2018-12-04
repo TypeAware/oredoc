@@ -8,22 +8,23 @@ export namespace Entities {
     
       export  namespace Basic {
 
-        export interface Roop {
+        export class Roop {
 
         }
       
-        export interface Req {
+        export class Req {
 
           headers: {
-            zoomHeader: 5
-          },
+            zoomHeader: number
+          };
+          
           body: {
-            zoomBody: '44'
+            zoomBody: string
           }
         }
       
-        export  interface Res {
-          headers: {},
+        export  class Res {
+          headers: {};
           body: {
             foo1: number,
             foo2: string,
@@ -39,15 +40,15 @@ export namespace Entities {
   
       export  namespace Basic {
         
-        export interface Req {
-          headers: {},
+        export class Req {
+          headers: {};
           body: {
             bar: string
           }
         }
         
-       export  interface Res {
-          headers: {},
+       export  class Res {
+          headers: {};
           body: {
             foo: number
           }
