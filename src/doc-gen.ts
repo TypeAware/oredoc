@@ -4,6 +4,7 @@ import chalk from "chalk";
 import * as safe from "@oresoftware/safe-stringify";
 import {RequestHandler} from "express";
 import log from "./logger";
+import * as express from "express";
 
 export interface Headers {
   [key: string]: string
@@ -54,42 +55,40 @@ const flattenDeep = (v: Array<any>): Array<any> => {
   return v.reduce((acc, val) => Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val), []);
 };
 
-export class Route <T = any,E = any, Req = any, Res = any>{
+export class Route <Req = any, Res = any, ReqBody = any, ResBody = any>{
   
   path: string;
   methods: HTTPMethods[];
   requestClass: Req;
   responseClass: Res;
-  requestBodyClass: E;
-  responseBodyClass: T;
+  requestBodyClass: any;
+  responseBodyClass: any;
   responseBodyType: string;
   requestBodyType: string;
   
-  constructor(methods: HTTPMethods[], p: string){
+  constructor(methods: HTTPMethods[], p: string, entityName?: string){
     this.methods = methods.slice(0);
   }
   
-  setRequestType<T>(v:T): T{
-   
+  setRequestType(v: Req): Req {
+    this.requestClass = v;
     return v;
   }
   
-  setResponseType(v: any){
-    
+  setResponseType(v: Res): Res{
+    this.responseClass = v;
     return v;
   }
   
-  setResponseBodyType<T>(s: T): T{
-  
+  setResponseBodyType(s: ResBody): ResBody {
+    this.responseBodyClass = s;
     return s;
   }
   
-  setRequestBodyType<T>(s: T): T{
-  
-  
+  setRequestBodyType(s: ReqBody): ReqBody {
+    this.requestBodyClass =s;
     return s;
   }
-  
   
 }
 
@@ -144,12 +143,12 @@ export class DocGen {
     };
   }
   
-  createRoute(methods: HTTPMethods[], path:string) : Route{
-    return new Route(methods, path);
+  createRoute(methods: HTTPMethods[], path:string, entityName?: string) : Route{
+    return new Route(methods, path, entityName);
   }
   
-  createAndAddRoute(methods: HTTPMethods[], path:string) : Route{
-    const r = this.createRoute(methods,path);
+  addRoute(methods: HTTPMethods[], path:string, entityName?: string) : Route{
+    const r = this.createRoute(methods,path,entityName);
     this.routes.add(r);
     return r;
   }
@@ -192,7 +191,7 @@ export class DocGen {
     return this;
   }
   
-  addRoute(entity: string, v: RouteInfo): this {
+  addRoute2(entity: string, v: RouteInfo): this {
     
     return this;
   }
@@ -200,6 +199,29 @@ export class DocGen {
   serialize(): string {
     return safe.stringify(this.info);
   }
+  
+   makeAddRoute1 (router: any, entityName: string) {
+    
+    return (methods: HTTPMethods[], route: string, f: (method: HTTPMethods, route: string, router?: express.Router) => any) => {
+      
+      const r = this.addRoute(methods, route);
+      
+      for (const m of methods) {
+        f(m, route, router);
+      }
+    }
+    
+  }
+  
+   makeAddRoute (router: any, entityName?: string) {
+    return (methods: HTTPMethods | HTTPMethods[], route: string, f: (r: Route) => (RequestHandler[] | RequestHandler)) => {
+      const r = this.addRoute(flattenDeep([methods]).filter(Boolean), route, entityName);
+      const handlers = flattenDeep([f(r)]);
+      for (const v of methods) {
+        (router as any)[v as any](route, ...handlers);
+      }
+    }
+  };
   
   serve(): RequestHandler {
     

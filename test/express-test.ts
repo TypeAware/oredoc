@@ -1,3 +1,5 @@
+'use strict';
+
 import * as express from 'express';
 import {RequestHandler} from 'express';
 // import {DocGen, Entity, RouteMulti} from '../dist/original';
@@ -9,66 +11,74 @@ import {Route} from "../src/doc-gen";
 const router = express.Router();
 type HTTPMethods = 'put' | 'get' | 'head' | 'post' | 'delete';
 
-const makeAddRoute = function (router: any, inject: any, entityName: string, d: DocGen) {
-  return function addRoute(f: any, methods: Array<HTTPMethods>, route: string) {
-    
-    const r = d.createAndAddRoute(methods,route);
-    const handler = f();
-    for (let v of methods) {
-      (router as any)[v as any](route, handler);
-    }
-  }
-  
-};
 
-export const register = (v: any, d: DocGen) => {
+
+export const register = (v: string, d: DocGen) => {
+  
   // router.get('/', makeGetFoo(v, d));
   // router.put('/', makePutFoo(v, d));
   
-  const addRoute = makeAddRoute(router, v, 'dogs', d);
-  addRoute(makeGetFoo, ['get'], '/');
+  const addRoute = d.makeAddRoute(router, 'dogs');
+  
+  addRoute(['get'], '/', (r: Route) => makeGetFoo(v,r));
+  addRoute(['put'], '/', (r: Route) => makePutFoo(v,r));
+  
+  addRoute(['get'], '/', (r: Route) => makeGetFoo(v,r));
+  addRoute(['put'], '/', (r: Route) => makePutFoo(v,r));
+  
+  
+  // addRoute(['get'], '/', (method, route) => router[method](route,));
+  
+  
+  // {
+  //   let methods = ['get'], route = '/';
+  //
+  // }
+  
+  
 };
 
 
-export class FooZ {
-
-}
-
-
-type F = FooZ;
 
 
 
-const makeGetFoo = (v: any, x: Route): RequestHandler => {
+const makeGetFoo = (v: string, r: Route) : Array<RequestHandler> => {
   
   // type Req =  x.setRequestType();
   // type Req =  typeof (x.setRequestBodyType(Foo.GET.Basic.Req));
   
-  type Res = Foo.GET.Basic.Res;
-  type Req = Foo.GET.Basic.Req;
-  
+  // type Res = Foo.GET.Basic.Res;
+  // type Req = Foo.GET.Basic.Req;
+  //
   // type Req =  Req1;
   // type Res =  Res1;
   
-  const z = x.setResponseBodyType(Foo.GET.Basic.Req);
+  
+  const req = r.setResponseBodyType(Foo.GET.Basic.Req);
+  type Req = typeof req;
+  
+  const res = r.setResponseBodyType(Foo.GET.Basic.Req);
+  type Res = typeof res;
   
   
   // x.setRequestBodyType(Foo.GET.Basic.Req);
   // // x.setResponseBodyType(Res1);
   // x.setRequestBodyType(Foo.GET.Basic.Req);
   
-  return (req, res, next) => {
+  
+  
+  return [(req, res, next) => {
     
     const body: Req['body'] = req.body;
     const headers = req.headers.foo;
     
     res.json(<Res['body']>{foo1: 4});
     
-  };
+  }];
   
 };
 
-const makePutFoo = (v: any, e: DocGen): RequestHandler => {
+const makePutFoo = (v: string, r: Route) : RequestHandler => {
   
   type Req = Entities.Foo.PUT.Basic.Req;
   type Res = Entities.Foo.PUT.Basic.Res;
@@ -84,7 +94,7 @@ const makePutFoo = (v: any, e: DocGen): RequestHandler => {
 };
 
 register(
-  {},
+  'injection data here',
   new DocGen()
 );
 
